@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cosmos-darker text-gray-100 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-cosmos-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-cosmos-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-cyan/50;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent-cyan ring-offset-2 ring-offset-cosmos-dark;
+  }
+}
+
+@layer components {
+  /* Glow effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent-cyan via-accent-purple to-accent-pink bg-clip-text text-transparent;
+  }
+
+  /* Card base */
+  .card-base {
+    @apply bg-cosmos-card/80 backdrop-blur-sm border border-cosmos-border rounded-xl;
+  }
+
+  /* Stars background effect */
+  .stars-bg {
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, white, transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 90px 40px, white, transparent),
+      radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 230px 80px, white, transparent),
+      radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px 1px at 370px 50px, white, transparent),
+      radial-gradient(2px 2px at 450px 180px, rgba(255,255,255,0.8), transparent);
+    background-size: 500px 200px;
+    background-repeat: repeat;
+    animation: stars-move 120s linear infinite;
+  }
+
+  @keyframes stars-move {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 400px; }
+  }
+}
+
+@layer utilities {
+  /* Animation delays */
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+}
