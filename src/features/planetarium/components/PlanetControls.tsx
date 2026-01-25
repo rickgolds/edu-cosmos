@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Settings2,
-  RotateCcw,
   Sun,
   Layers,
   Eye,
@@ -66,25 +65,6 @@ export function PlanetControls({
 
             {/* Controls */}
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
-              {/* Auto-rotate */}
-              <ControlSection icon={RotateCcw} title="Rotacja">
-                <ToggleSwitch
-                  label="Auto-rotacja"
-                  checked={settings.autoRotate}
-                  onChange={(checked) => onSettingsChange({ autoRotate: checked })}
-                />
-                {settings.autoRotate && (
-                  <Slider
-                    label="Prędkość"
-                    min={0.1}
-                    max={2}
-                    step={0.1}
-                    value={settings.rotationSpeed}
-                    onChange={(value) => onSettingsChange({ rotationSpeed: value })}
-                  />
-                )}
-              </ControlSection>
-
               {/* Lighting */}
               <ControlSection icon={Sun} title="Oświetlenie">
                 <div className="grid grid-cols-2 gap-2 mb-3">

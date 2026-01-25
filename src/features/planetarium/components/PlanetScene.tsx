@@ -219,8 +219,7 @@ export function PlanetScene({ planet, settings, onTimeUpdate }: PlanetSceneProps
           enablePan={false}
           minDistance={minDistance}
           maxDistance={maxDistance}
-          autoRotate={settings.autoRotate}
-          autoRotateSpeed={settings.rotationSpeed * 5}
+          autoRotate={false}
           dampingFactor={0.05}
           enableDamping
           rotateSpeed={0.5}

@@ -13,7 +13,9 @@ export {
   FALLBACK_COLORS,
   LIGHTING_POSITIONS,
   BACKGROUND_TEXTURE,
+  MODELS_PATH,
   getDefaultCameraDistance,
+  getGlbPath,
 } from './planetarium.assets';
 
 // Utils

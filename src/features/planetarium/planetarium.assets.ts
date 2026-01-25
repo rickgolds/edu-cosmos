@@ -7,10 +7,23 @@ import { PlanetAssetConfig } from './planetarium.types';
  * - NASA Visible Earth: https://visibleearth.nasa.gov (public domain)
  * - Solar System Scope: https://www.solarsystemscope.com/textures/ (CC BY 4.0)
  * - Planet Pixel Emporium: http://planetpixelemporium.com (free for non-commercial)
+ *
+ * GLB models: place in public/planetarium/models/{planetId}.glb
+ * They will be automatically detected and used if available.
  */
 
 // Background texture path
 export const BACKGROUND_TEXTURE = '/planetarium/textures/stars_background.jpg';
+
+// GLB models directory - files should be named {planetId}.glb
+export const MODELS_PATH = '/planetarium/models';
+
+/**
+ * Get the expected GLB file path for a planet
+ */
+export function getGlbPath(planetId: string): string {
+  return `${MODELS_PATH}/${planetId}.glb`;
+}
 
 export const PLANET_ASSETS: PlanetAssetConfig[] = [
   {

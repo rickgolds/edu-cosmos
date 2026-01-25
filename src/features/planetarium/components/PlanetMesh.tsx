@@ -1,11 +1,11 @@
 'use client';
 
-import { useRef, useState, useEffect, Suspense } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useRef, useState, useEffect, Suspense, useMemo } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { PlanetInfo, PlanetAssetConfig, QualityLevel } from '../planetarium.types';
-import { FALLBACK_COLORS } from '../planetarium.assets';
+import { FALLBACK_COLORS, getGlbPath } from '../planetarium.assets';
 
 interface PlanetMeshProps {
   planet: PlanetInfo;
@@ -17,6 +17,7 @@ interface PlanetMeshProps {
 
 /**
  * GLB Model renderer for planets
+ * Normalizes the model to fit within expected bounds
  */
 function GLBPlanet({
   glbFile,
@@ -33,8 +34,32 @@ function GLBPlanet({
   rotationSpeed: number;
   assetRotationSpeed: number;
 }) {
-  const { scene } = useGLTF(glbFile);
+  const gltf = useLoader(GLTFLoader, glbFile);
   const groupRef = useRef<THREE.Group>(null);
+
+  // Clone and normalize the scene
+  const normalizedScene = useMemo(() => {
+    const cloned = gltf.scene.clone();
+
+    // Calculate bounding box to normalize scale
+    const box = new THREE.Box3().setFromObject(cloned);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    // Normalize to unit size (diameter = 2, like our sphere)
+    if (maxDim > 0) {
+      const normalizeScale = 2 / maxDim;
+      cloned.scale.multiplyScalar(normalizeScale);
+    }
+
+    // Center the model
+    const center = box.getCenter(new THREE.Vector3());
+    cloned.position.sub(center.multiplyScalar(cloned.scale.x));
+
+    console.log(`[GLB] Loaded ${glbFile}, original size:`, size, 'normalized scale:', cloned.scale);
+
+    return cloned;
+  }, [gltf.scene, glbFile]);
 
   useFrame((_, delta) => {
     if (groupRef.current && autoRotate) {
@@ -44,7 +69,7 @@ function GLBPlanet({
 
   return (
     <group ref={groupRef} rotation={[0, 0, tiltRadians]} scale={scale}>
-      <primitive object={scene.clone()} />
+      <primitive object={normalizedScene} />
     </group>
   );
 }
@@ -63,12 +88,10 @@ function TexturePlanet({
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const segments = quality === 'high' ? 64 : 32;
 
-  // State for textures
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [normalMap, setNormalMap] = useState<THREE.Texture | null>(null);
   const [emissiveMap, setEmissiveMap] = useState<THREE.Texture | null>(null);
 
-  // Apply axial tilt
   const tiltRadians = THREE.MathUtils.degToRad(assets.tilt);
   const fallbackColor = FALLBACK_COLORS[planet.id] || planet.color;
 
@@ -77,12 +100,9 @@ function TexturePlanet({
     let isMounted = true;
     setTexture(null);
 
-    if (!assets.textureFile) {
-      return;
-    }
+    if (!assets.textureFile) return;
 
     const loader = new THREE.TextureLoader();
-
     loader.load(
       assets.textureFile,
       (loadedTexture) => {
@@ -93,14 +113,10 @@ function TexturePlanet({
         }
       },
       undefined,
-      (error) => {
-        console.error(`Failed to load texture for ${planet.id}:`, error);
-      }
+      (error) => console.error(`Failed to load texture for ${planet.id}:`, error)
     );
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [assets.textureFile, planet.id]);
 
   // Load normal map
@@ -108,12 +124,9 @@ function TexturePlanet({
     let isMounted = true;
     setNormalMap(null);
 
-    if (!assets.normalMapFile) {
-      return;
-    }
+    if (!assets.normalMapFile) return;
 
     const loader = new THREE.TextureLoader();
-
     loader.load(
       assets.normalMapFile,
       (loadedTexture) => {
@@ -123,27 +136,20 @@ function TexturePlanet({
         }
       },
       undefined,
-      (error) => {
-        console.warn(`Failed to load normal map for ${planet.id}:`, error);
-      }
+      (error) => console.warn(`Failed to load normal map for ${planet.id}:`, error)
     );
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [assets.normalMapFile, planet.id]);
 
-  // Load emissive map (night lights for Earth)
+  // Load emissive map
   useEffect(() => {
     let isMounted = true;
     setEmissiveMap(null);
 
-    if (!assets.emissiveMapFile) {
-      return;
-    }
+    if (!assets.emissiveMapFile) return;
 
     const loader = new THREE.TextureLoader();
-
     loader.load(
       assets.emissiveMapFile,
       (loadedTexture) => {
@@ -154,14 +160,10 @@ function TexturePlanet({
         }
       },
       undefined,
-      (error) => {
-        console.warn(`Failed to load emissive map for ${planet.id}:`, error);
-      }
+      (error) => console.warn(`Failed to load emissive map for ${planet.id}:`, error)
     );
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [assets.emissiveMapFile, planet.id]);
 
   // Update material when textures change
@@ -180,7 +182,6 @@ function TexturePlanet({
     }
   }, [texture, normalMap, emissiveMap, fallbackColor]);
 
-  // Rotation animation
   useFrame((_, delta) => {
     if (meshRef.current && autoRotate) {
       meshRef.current.rotation.y += assets.rotationSpeed * rotationSpeed * delta * 50;
@@ -206,79 +207,98 @@ function TexturePlanet({
   );
 }
 
+/**
+ * Main PlanetMesh component with auto GLB detection
+ */
 export function PlanetMesh(props: PlanetMeshProps) {
-  const { assets, autoRotate, rotationSpeed } = props;
-  const [glbFailed, setGlbFailed] = useState(false);
+  const { planet, assets, autoRotate, rotationSpeed } = props;
+  const [glbStatus, setGlbStatus] = useState<'checking' | 'found' | 'not-found' | 'error'>('checking');
 
-  // Try GLB first if available
-  if (assets.renderMode === 'glb' && assets.glbFile && !glbFailed) {
+  const glbPath = getGlbPath(planet.id);
+
+  // Check if GLB exists
+  useEffect(() => {
+    setGlbStatus('checking');
+
+    fetch(glbPath, { method: 'HEAD' })
+      .then((response) => {
+        if (response.ok) {
+          console.log(`[GLB] Found model for ${planet.id}: ${glbPath}`);
+          setGlbStatus('found');
+        } else {
+          console.log(`[GLB] No model for ${planet.id}, using textures`);
+          setGlbStatus('not-found');
+        }
+      })
+      .catch(() => {
+        setGlbStatus('not-found');
+      });
+  }, [glbPath, planet.id]);
+
+  // While checking or if not found, use textures
+  if (glbStatus === 'checking' || glbStatus === 'not-found') {
+    return <TexturePlanet {...props} />;
+  }
+
+  // GLB found - try to load it with fallback
+  if (glbStatus === 'found') {
     return (
       <Suspense fallback={<TexturePlanet {...props} />}>
-        <GLBPlanetWithFallback
-          glbFile={assets.glbFile}
+        <GLBWithFallback
+          glbPath={glbPath}
           scale={assets.scale}
           tiltRadians={THREE.MathUtils.degToRad(assets.tilt)}
           autoRotate={autoRotate}
           rotationSpeed={rotationSpeed}
           assetRotationSpeed={assets.rotationSpeed}
-          onError={() => setGlbFailed(true)}
-          fallback={<TexturePlanet {...props} />}
+          onError={() => setGlbStatus('error')}
         />
       </Suspense>
     );
   }
 
-  // Default to texture-based rendering
+  // Error loading GLB - use textures
   return <TexturePlanet {...props} />;
 }
 
 /**
- * GLB loader with error boundary-like behavior
+ * GLB loader with error callback
  */
-function GLBPlanetWithFallback({
-  glbFile,
+function GLBWithFallback({
+  glbPath,
   scale,
   tiltRadians,
   autoRotate,
   rotationSpeed,
   assetRotationSpeed,
   onError,
-  fallback,
 }: {
-  glbFile: string;
+  glbPath: string;
   scale: number;
   tiltRadians: number;
   autoRotate: boolean;
   rotationSpeed: number;
   assetRotationSpeed: number;
   onError: () => void;
-  fallback: React.ReactNode;
 }) {
-  const [hasError, setHasError] = useState(false);
-
   useEffect(() => {
-    // Preload and check if file exists
-    useGLTF.preload(glbFile);
-  }, [glbFile]);
+    // Set up error handler for loader
+    const handleError = () => {
+      console.error(`[GLB] Failed to load: ${glbPath}`);
+      onError();
+    };
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, [glbPath, onError]);
 
-  if (hasError) {
-    return <>{fallback}</>;
-  }
-
-  try {
-    return (
-      <GLBPlanet
-        glbFile={glbFile}
-        scale={scale}
-        tiltRadians={tiltRadians}
-        autoRotate={autoRotate}
-        rotationSpeed={rotationSpeed}
-        assetRotationSpeed={assetRotationSpeed}
-      />
-    );
-  } catch {
-    setHasError(true);
-    onError();
-    return <>{fallback}</>;
-  }
+  return (
+    <GLBPlanet
+      glbFile={glbPath}
+      scale={scale}
+      tiltRadians={tiltRadians}
+      autoRotate={autoRotate}
+      rotationSpeed={rotationSpeed}
+      assetRotationSpeed={assetRotationSpeed}
+    />
+  );
 }
