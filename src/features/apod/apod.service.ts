@@ -2,7 +2,7 @@ import { NASA_APOD_URL } from '@/lib/constants';
 import { buildUrl } from '@/lib/fetcher';
 import { Apod, ApodSchema, ApodArraySchema, ApodParams } from './apod.types';
 
-const API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY';
+const API_KEY = process.env.NASA_API_KEY || process.env.NEXT_PUBLIC_NASA_API_KEY;
 
 /**
  * Fetch today's APOD

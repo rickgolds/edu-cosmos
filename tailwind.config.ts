@@ -17,6 +17,15 @@ const config: Config = {
           card: '#12122a',
           border: '#1e1e3f',
         },
+        // Planetarium theme - mission control aesthetic
+        planetarium: {
+          bg: '#020208',
+          panel: 'rgba(10, 20, 40, 0.85)',
+          border: 'rgba(0, 180, 220, 0.3)',
+          glow: '#00b4dc',
+          accent: '#00ffcc',
+          warning: '#ff6b35',
+        },
         accent: {
           cyan: '#00d4ff',
           purple: '#a855f7',
@@ -50,6 +59,11 @@ const config: Config = {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'twinkle': 'twinkle 2s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
+        // Planetarium animations
+        'scan-line': 'scanLine 3s linear infinite',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'slide-in-right': 'slideInRight 0.4s ease-out',
+        'slide-in-left': 'slideInLeft 0.4s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -67,6 +81,23 @@ const config: Config = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        // Planetarium keyframes
+        scanLine: {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
+        glowPulse: {
+          '0%, 100%': { opacity: '0.5', boxShadow: '0 0 10px rgba(0, 180, 220, 0.3)' },
+          '50%': { opacity: '1', boxShadow: '0 0 25px rgba(0, 180, 220, 0.6)' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
         },
       },
     },

@@ -423,5 +423,5 @@ export function getLessonsByCategory(category: string): Lesson[] {
 }
 
 export function getAllCategories(): string[] {
-  return [...new Set(lessons.map((lesson) => lesson.category))];
+  return Array.from(new Set(lessons.map((lesson) => lesson.category)));
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Brain, Bookmark, Flame, Trophy, Clock, TrendingUp } from 'lucide-react';
+import { BookOpen, Brain, Bookmark, Flame, Trophy, Clock, TrendingUp, Orbit, FlaskConical } from 'lucide-react';
 import { Card, CardTitle, Badge, Button, EmptyState } from '@/components/ui';
 import { useProgress, useIsMounted } from '@/hooks';
 import { getRelativeTime } from '@/lib/date-utils';
@@ -15,7 +15,11 @@ export function ProgressDashboard() {
     return <ProgressDashboardSkeleton />;
   }
 
-  const hasActivity = stats.completedLessonsCount > 0 || stats.totalQuizzes > 0;
+  const hasActivity = stats.completedLessonsCount > 0 || stats.totalQuizzes > 0 ||
+    (progress.asteroidAnalyses?.length ?? 0) > 0;
+
+  const labsCompleted = progress.labCompletions?.length ?? 0;
+  const asteroidsAnalyzed = progress.asteroidAnalyses?.length ?? 0;
 
   return (
     <div className="space-y-8">
@@ -45,6 +49,34 @@ export function ProgressDashboard() {
           value={stats.streak}
           color="warning"
         />
+      </div>
+
+      {/* New modules stats */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card padding="md" className="text-center">
+          <div className="inline-flex p-3 rounded-lg bg-warning/20 text-warning mb-3">
+            <Orbit className="w-6 h-6" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">{asteroidsAnalyzed}</p>
+          <p className="text-sm text-gray-400">Przeanalizowanych asteroid</p>
+          {asteroidsAnalyzed > 0 && (
+            <Link href="/asteroid-watch" className="text-xs text-accent-cyan hover:underline mt-2 inline-block">
+              Zobacz więcej →
+            </Link>
+          )}
+        </Card>
+        <Card padding="md" className="text-center">
+          <div className="inline-flex p-3 rounded-lg bg-accent-pink/20 text-accent-pink mb-3">
+            <FlaskConical className="w-6 h-6" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">{labsCompleted}/2</p>
+          <p className="text-sm text-gray-400">Ukończonych laboratoriów</p>
+          {labsCompleted < 2 && (
+            <Link href="/labs" className="text-xs text-accent-cyan hover:underline mt-2 inline-block">
+              Kontynuuj →
+            </Link>
+          )}
+        </Card>
       </div>
 
       {/* Main content */}
@@ -159,6 +191,16 @@ export function ProgressDashboard() {
               title="Kolekcjoner"
               description="Zapisz 5 zdjęć APOD"
               unlocked={stats.bookmarksCount >= 5}
+            />
+            <Achievement
+              title="Strażnik asteroid"
+              description="Przeanalizuj 10 asteroid"
+              unlocked={asteroidsAnalyzed >= 10}
+            />
+            <Achievement
+              title="Naukowiec"
+              description="Ukończ oba laboratoria"
+              unlocked={labsCompleted >= 2}
             />
           </div>
         </Card>

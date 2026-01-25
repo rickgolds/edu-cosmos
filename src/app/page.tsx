@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Rocket, BookOpen, Brain, Search, ArrowRight, Sparkles } from 'lucide-react';
+import { Rocket, BookOpen, Brain, Search, ArrowRight, Sparkles, Orbit, FlaskConical } from 'lucide-react';
 import { Button, Card, CardTitle, Badge, SkeletonCard } from '@/components/ui';
 import { fetchTodayApod } from '@/features/apod';
 import { ApodCard } from '@/features/apod';
@@ -88,6 +88,24 @@ export default function HomePage() {
               description="Przeszukuj ogromną bazę zdjęć i filmów NASA."
               href="/library"
               color="blue"
+            />
+          </div>
+
+          {/* New modules row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <FeatureCard
+              icon={<Orbit className="w-8 h-8" />}
+              title="Asteroid Watch"
+              description="Monitoruj asteroidy bliskie Ziemi w czasie rzeczywistym z NASA NeoWs."
+              href="/asteroid-watch"
+              color="cyan"
+            />
+            <FeatureCard
+              icon={<FlaskConical className="w-8 h-8" />}
+              title="Laboratoria"
+              description="Interaktywne symulacje grawitacji i czasu podróży w kosmosie."
+              href="/labs"
+              color="purple"
             />
           </div>
         </div>

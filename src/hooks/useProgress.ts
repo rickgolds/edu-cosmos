@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/constants';
+import { STORAGE_KEYS, PROGRESS_VERSION, BADGES } from '@/lib/constants';
 import { calculateStreak, formatDateForApi } from '@/lib/date-utils';
 
 // Progress data types
@@ -21,30 +21,113 @@ export interface QuizResult {
   answers: Record<string, string>;
 }
 
+export interface MarsExploration {
+  photoId: number;
+  rover: string;
+  sol: number;
+  completedAt: string;
+  checklistCompleted: string[];
+}
+
+export interface LabCompletion {
+  labId: string;
+  completedAt: string;
+  score?: number;
+}
+
+export interface AsteroidAnalysis {
+  neoId: string;
+  analyzedAt: string;
+}
+
+export interface PlanetVisit {
+  planetId: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  totalSecondsSpent: number;
+}
+
 export interface ProgressData {
+  version: number;
   lessonsProgress: Record<string, LessonProgress>;
   quizResults: QuizResult[];
   bookmarks: string[]; // APOD dates
   activityDates: string[];
   lastActive: string | null;
+  // New fields (v2)
+  badges: string[];
+  marsExplorations: MarsExploration[];
+  labCompletions: LabCompletion[];
+  asteroidAnalyses: AsteroidAnalysis[];
+  glossaryStudyList: string[];
+  // New fields (v3) - Planetarium
+  planetariumVisits: PlanetVisit[];
+  planetariumTotalSeconds: number;
 }
 
 const initialProgress: ProgressData = {
+  version: PROGRESS_VERSION,
   lessonsProgress: {},
   quizResults: [],
   bookmarks: [],
   activityDates: [],
   lastActive: null,
+  badges: [],
+  marsExplorations: [],
+  labCompletions: [],
+  asteroidAnalyses: [],
+  glossaryStudyList: [],
+  // v3 - Planetarium
+  planetariumVisits: [],
+  planetariumTotalSeconds: 0,
 };
+
+/**
+ * Migrate old progress data to new version
+ */
+function migrateProgress(data: Partial<ProgressData>): ProgressData {
+  const _version = data.version || 1;  // For future migrations
+
+  // Base structure from v1
+  const migrated: ProgressData = {
+    version: PROGRESS_VERSION,
+    lessonsProgress: data.lessonsProgress || {},
+    quizResults: data.quizResults || [],
+    bookmarks: data.bookmarks || [],
+    activityDates: data.activityDates || [],
+    lastActive: data.lastActive || null,
+    // New v2 fields with defaults
+    badges: data.badges || [],
+    marsExplorations: data.marsExplorations || [],
+    labCompletions: data.labCompletions || [],
+    asteroidAnalyses: data.asteroidAnalyses || [],
+    glossaryStudyList: data.glossaryStudyList || [],
+    // New v3 fields - Planetarium
+    planetariumVisits: data.planetariumVisits || [],
+    planetariumTotalSeconds: data.planetariumTotalSeconds || 0,
+  };
+
+  // Future migrations can be added here
+  // if (version < 4) { ... }
+
+  return migrated;
+}
 
 /**
  * Main progress tracking hook
  */
 export function useProgress() {
-  const [progress, setProgress] = useLocalStorage<ProgressData>(
+  const [progress, setProgress, clearProgress] = useLocalStorage<ProgressData>(
     STORAGE_KEYS.PROGRESS,
     initialProgress
   );
+
+  // Migrate on load if needed
+  useEffect(() => {
+    if (!progress.version || progress.version < PROGRESS_VERSION) {
+      setProgress(migrateProgress(progress));
+    }
+  }, [progress, setProgress]);
 
   // Record activity (for streak)
   const recordActivity = useCallback(() => {
@@ -65,18 +148,25 @@ export function useProgress() {
   const completeLesson = useCallback(
     (lessonSlug: string, quizScore: number | null) => {
       recordActivity();
-      setProgress((prev) => ({
-        ...prev,
-        lessonsProgress: {
-          ...prev.lessonsProgress,
-          [lessonSlug]: {
-            lessonSlug,
-            completed: true,
-            quizScore,
-            completedAt: new Date().toISOString(),
+      setProgress((prev) => {
+        const newProgress = {
+          ...prev,
+          lessonsProgress: {
+            ...prev.lessonsProgress,
+            [lessonSlug]: {
+              lessonSlug,
+              completed: true,
+              quizScore,
+              completedAt: new Date().toISOString(),
+            },
           },
-        },
-      }));
+        };
+        // Check for first step badge
+        if (!prev.badges.includes(BADGES.FIRST_STEP)) {
+          newProgress.badges = [...prev.badges, BADGES.FIRST_STEP];
+        }
+        return newProgress;
+      });
     },
     [setProgress, recordActivity]
   );
@@ -85,13 +175,18 @@ export function useProgress() {
   const saveQuizResult = useCallback(
     (result: Omit<QuizResult, 'completedAt'>) => {
       recordActivity();
-      setProgress((prev) => ({
-        ...prev,
-        quizResults: [
+      setProgress((prev) => {
+        const newQuizResults = [
           ...prev.quizResults,
           { ...result, completedAt: new Date().toISOString() },
-        ],
-      }));
+        ];
+        const badges = [...prev.badges];
+        // Check for quiz expert badge
+        if (newQuizResults.length >= 5 && !badges.includes(BADGES.QUIZ_EXPERT)) {
+          badges.push(BADGES.QUIZ_EXPERT);
+        }
+        return { ...prev, quizResults: newQuizResults, badges };
+      });
     },
     [setProgress, recordActivity]
   );
@@ -101,12 +196,15 @@ export function useProgress() {
     (apodDate: string) => {
       setProgress((prev) => {
         const isBookmarked = prev.bookmarks.includes(apodDate);
-        return {
-          ...prev,
-          bookmarks: isBookmarked
-            ? prev.bookmarks.filter((d) => d !== apodDate)
-            : [...prev.bookmarks, apodDate],
-        };
+        const newBookmarks = isBookmarked
+          ? prev.bookmarks.filter((d) => d !== apodDate)
+          : [...prev.bookmarks, apodDate];
+        const badges = [...prev.badges];
+        // Check for collector badge
+        if (newBookmarks.length >= 5 && !badges.includes(BADGES.COLLECTOR)) {
+          badges.push(BADGES.COLLECTOR);
+        }
+        return { ...prev, bookmarks: newBookmarks, badges };
       });
     },
     [setProgress]
@@ -122,6 +220,201 @@ export function useProgress() {
   const getLessonProgress = useCallback(
     (lessonSlug: string) => progress.lessonsProgress[lessonSlug] || null,
     [progress.lessonsProgress]
+  );
+
+  // Add Mars exploration
+  const addMarsExploration = useCallback(
+    (exploration: Omit<MarsExploration, 'completedAt'>) => {
+      recordActivity();
+      setProgress((prev) => {
+        // Check if already explored
+        if (prev.marsExplorations.some((e) => e.photoId === exploration.photoId)) {
+          // Update checklist
+          return {
+            ...prev,
+            marsExplorations: prev.marsExplorations.map((e) =>
+              e.photoId === exploration.photoId
+                ? { ...e, checklistCompleted: exploration.checklistCompleted }
+                : e
+            ),
+          };
+        }
+        const newExplorations = [
+          ...prev.marsExplorations,
+          { ...exploration, completedAt: new Date().toISOString() },
+        ];
+        const badges = [...prev.badges];
+        // Check for Mars researcher badge
+        if (newExplorations.length >= 10 && !badges.includes(BADGES.MARS_RESEARCHER)) {
+          badges.push(BADGES.MARS_RESEARCHER);
+        }
+        return { ...prev, marsExplorations: newExplorations, badges };
+      });
+    },
+    [setProgress, recordActivity]
+  );
+
+  // Add lab completion
+  const completeLabCallback = useCallback(
+    (labId: string, score?: number) => {
+      recordActivity();
+      setProgress((prev) => {
+        // Check if already completed
+        if (prev.labCompletions.some((l) => l.labId === labId)) {
+          return prev;
+        }
+        const newCompletions = [
+          ...prev.labCompletions,
+          { labId, completedAt: new Date().toISOString(), score },
+        ];
+        const badges = [...prev.badges];
+        // Check for lab explorer badge (2 labs = all)
+        if (newCompletions.length >= 2 && !badges.includes(BADGES.LAB_EXPLORER)) {
+          badges.push(BADGES.LAB_EXPLORER);
+        }
+        return { ...prev, labCompletions: newCompletions, badges };
+      });
+    },
+    [setProgress, recordActivity]
+  );
+
+  // Add asteroid analysis
+  const addAsteroidAnalysis = useCallback(
+    (neoId: string) => {
+      recordActivity();
+      setProgress((prev) => {
+        if (prev.asteroidAnalyses.some((a) => a.neoId === neoId)) {
+          return prev;
+        }
+        const newAnalyses = [
+          ...prev.asteroidAnalyses,
+          { neoId, analyzedAt: new Date().toISOString() },
+        ];
+        const badges = [...prev.badges];
+        if (newAnalyses.length >= 5 && !badges.includes(BADGES.ASTEROID_ANALYST)) {
+          badges.push(BADGES.ASTEROID_ANALYST);
+        }
+        return { ...prev, asteroidAnalyses: newAnalyses, badges };
+      });
+    },
+    [setProgress, recordActivity]
+  );
+
+  // Toggle glossary term in study list
+  const toggleGlossaryTerm = useCallback(
+    (termId: string) => {
+      setProgress((prev) => {
+        const inList = prev.glossaryStudyList.includes(termId);
+        const newList = inList
+          ? prev.glossaryStudyList.filter((t) => t !== termId)
+          : [...prev.glossaryStudyList, termId];
+        const badges = [...prev.badges];
+        if (newList.length >= 10 && !badges.includes(BADGES.GLOSSARY_MASTER)) {
+          badges.push(BADGES.GLOSSARY_MASTER);
+        }
+        return { ...prev, glossaryStudyList: newList, badges };
+      });
+    },
+    [setProgress]
+  );
+
+  // Check if term is in study list
+  const isTermInStudyList = useCallback(
+    (termId: string) => (progress.glossaryStudyList ?? []).includes(termId),
+    [progress.glossaryStudyList]
+  );
+
+  // Check if Mars photo is explored
+  const isMarsPhotoExplored = useCallback(
+    (photoId: number) => (progress.marsExplorations ?? []).some((e) => e.photoId === photoId),
+    [progress.marsExplorations]
+  );
+
+  // Get Mars photo exploration
+  const getMarsExploration = useCallback(
+    (photoId: number) => (progress.marsExplorations ?? []).find((e) => e.photoId === photoId) || null,
+    [progress.marsExplorations]
+  );
+
+  // Check if lab is completed
+  const isLabCompleted = useCallback(
+    (labId: string) => (progress.labCompletions ?? []).some((l) => l.labId === labId),
+    [progress.labCompletions]
+  );
+
+  // Visit a planet in Planetarium
+  const visitPlanet = useCallback(
+    (planetId: string, secondsSpent: number = 0) => {
+      recordActivity();
+      setProgress((prev) => {
+        const visits = prev.planetariumVisits ?? [];
+        const existingIndex = visits.findIndex((v) => v.planetId === planetId);
+        const now = new Date().toISOString();
+
+        let newVisits: PlanetVisit[];
+        if (existingIndex >= 0) {
+          // Update existing visit
+          newVisits = visits.map((v, i) =>
+            i === existingIndex
+              ? {
+                  ...v,
+                  lastSeenAt: now,
+                  totalSecondsSpent: v.totalSecondsSpent + secondsSpent,
+                }
+              : v
+          );
+        } else {
+          // New visit
+          newVisits = [
+            ...visits,
+            {
+              planetId,
+              firstSeenAt: now,
+              lastSeenAt: now,
+              totalSecondsSpent: secondsSpent,
+            },
+          ];
+        }
+
+        const newTotalSeconds = (prev.planetariumTotalSeconds ?? 0) + secondsSpent;
+        const badges = [...(prev.badges ?? [])];
+
+        // Check for Planet Explorer badge (4 planets)
+        if (newVisits.length >= 4 && !badges.includes(BADGES.PLANET_EXPLORER)) {
+          badges.push(BADGES.PLANET_EXPLORER);
+        }
+
+        // Check for Grand Tour badge (all 8 planets)
+        if (newVisits.length >= 8 && !badges.includes(BADGES.GRAND_TOUR)) {
+          badges.push(BADGES.GRAND_TOUR);
+        }
+
+        // Check for Stargazer badge (5 minutes total)
+        if (newTotalSeconds >= 300 && !badges.includes(BADGES.STARGAZER)) {
+          badges.push(BADGES.STARGAZER);
+        }
+
+        return {
+          ...prev,
+          planetariumVisits: newVisits,
+          planetariumTotalSeconds: newTotalSeconds,
+          badges,
+        };
+      });
+    },
+    [setProgress, recordActivity]
+  );
+
+  // Check if planet was visited
+  const isPlanetVisited = useCallback(
+    (planetId: string) => (progress.planetariumVisits ?? []).some((v) => v.planetId === planetId),
+    [progress.planetariumVisits]
+  );
+
+  // Get planet visit data
+  const getPlanetVisit = useCallback(
+    (planetId: string) => (progress.planetariumVisits ?? []).find((v) => v.planetId === planetId) || null,
+    [progress.planetariumVisits]
   );
 
   // Computed stats
@@ -155,6 +448,15 @@ export function useProgress() {
       bookmarksCount: progress.bookmarks.length,
       streak,
       lastActive: progress.lastActive,
+      // New stats (with fallbacks for migration safety)
+      badgesCount: progress.badges?.length ?? 0,
+      marsPhotosExplored: progress.marsExplorations?.length ?? 0,
+      labsCompleted: progress.labCompletions?.length ?? 0,
+      asteroidsAnalyzed: progress.asteroidAnalyses?.length ?? 0,
+      glossaryTermsCount: progress.glossaryStudyList?.length ?? 0,
+      // Planetarium stats (v3)
+      planetsVisited: progress.planetariumVisits?.length ?? 0,
+      planetariumTotalMinutes: Math.round((progress.planetariumTotalSeconds ?? 0) / 60),
     };
   }, [progress]);
 
@@ -167,5 +469,19 @@ export function useProgress() {
     isBookmarked,
     getLessonProgress,
     recordActivity,
+    // New methods
+    addMarsExploration,
+    completeLab: completeLabCallback,
+    addAsteroidAnalysis,
+    toggleGlossaryTerm,
+    isTermInStudyList,
+    isMarsPhotoExplored,
+    getMarsExploration,
+    isLabCompleted,
+    clearProgress,
+    // Planetarium methods (v3)
+    visitPlanet,
+    isPlanetVisited,
+    getPlanetVisit,
   };
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Bookmark, ExternalLink, Calendar, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Bookmark, ExternalLink, Calendar, User, ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
 import { Card, Badge, Button } from '@/components/ui';
 import { useProgress } from '@/hooks';
 import { formatDatePolish, formatDateForApi } from '@/lib/date-utils';
-import { GlossaryTerms } from './GlossaryTerms';
+import { HighlightedText } from '@/features/glossary';
 import type { Apod } from './apod.types';
 import Link from 'next/link';
 
@@ -117,14 +117,27 @@ export function ApodDetail({ apod }: ApodDetailProps) {
 
           <div className="prose prose-invert max-w-none">
             <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-              {apod.explanation}
+              <HighlightedText text={apod.explanation} />
             </p>
           </div>
         </div>
       </Card>
 
-      {/* Glossary */}
-      <GlossaryTerms text={apod.explanation} />
+      {/* Glossary link */}
+      <Card padding="md" className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <BookOpen className="w-5 h-5 text-accent-cyan" />
+          <div>
+            <h3 className="font-medium text-white">Słowniczek pojęć</h3>
+            <p className="text-sm text-gray-400">
+              Najedź na podświetlone słowa w tekście, aby zobaczyć definicje
+            </p>
+          </div>
+        </div>
+        <Link href="/glossary">
+          <Button variant="secondary">Pełny słowniczek</Button>
+        </Link>
+      </Card>
     </div>
   );
 }

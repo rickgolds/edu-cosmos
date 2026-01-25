@@ -187,12 +187,14 @@ function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () =>
         {item.thumbnailUrl && (
           <div className="relative aspect-video bg-cosmos-dark">
             {item.mediaType === 'video' ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <Video className="w-16 h-16 text-gray-500" />
-                <p className="absolute bottom-4 text-sm text-gray-400">
-                  Podgląd wideo niedostępny
-                </p>
-              </div>
+              <video
+                src={item.thumbnailUrl.replace('~thumb', '~orig').replace('.jpg', '.mp4')}
+                controls
+                className="w-full h-full"
+                poster={item.thumbnailUrl}
+              >
+                Twoja przeglądarka nie obsługuje odtwarzania wideo.
+              </video>
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -244,7 +246,11 @@ function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () =>
             </Button>
             {item.thumbnailUrl && (
               <a
-                href={item.thumbnailUrl.replace('~thumb', '~orig')}
+                href={
+                  item.mediaType === 'video'
+                    ? item.thumbnailUrl.replace('~thumb', '~orig').replace('.jpg', '.mp4')
+                    : item.thumbnailUrl.replace('~thumb', '~orig')
+                }
                 target="_blank"
                 rel="noopener noreferrer"
               >

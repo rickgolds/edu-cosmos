@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Rocket, BookOpen, Brain, Search, BarChart3, Info } from 'lucide-react';
+import { Menu, X, Rocket, BookOpen, Brain, Search, BarChart3, Info, Orbit, FlaskConical, Globe2 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navLinks = [
@@ -11,6 +11,9 @@ const navLinks = [
   { href: '/apod', label: 'Kosmos dziś', icon: null },
   { href: '/lessons', label: 'Lekcje', icon: BookOpen },
   { href: '/quizzes', label: 'Quizy', icon: Brain },
+  { href: '/asteroid-watch', label: 'Asteroidy', icon: Orbit },
+  { href: '/planetarium', label: 'Planetarium', icon: Globe2 },
+  { href: '/labs', label: 'Laboratoria', icon: FlaskConical },
   { href: '/library', label: 'Biblioteka', icon: Search },
   { href: '/progress', label: 'Postęp', icon: BarChart3 },
 ];

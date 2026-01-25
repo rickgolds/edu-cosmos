@@ -3,7 +3,7 @@
 import { Card, Button, Badge } from '@/components/ui';
 import { CheckCircle, XCircle, ArrowRight, RotateCcw, Trophy, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
-import type { Quiz, Question, AnswerOption, QuizResult } from './quiz.types';
+import type { Quiz, QuizResult, AnswerOption } from './quiz.types';
 import { useQuiz } from './useQuiz';
 
 interface QuizViewProps {
@@ -254,7 +254,7 @@ interface QuizSummaryProps {
   onRestart: () => void;
 }
 
-function QuizSummary({ result, quiz, onRestart }: QuizSummaryProps) {
+function QuizSummary({ result, quiz: _quiz, onRestart }: QuizSummaryProps) {
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
