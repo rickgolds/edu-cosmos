@@ -21,12 +21,26 @@ import { preloadMoonTexture } from './Moon';
 import { getPlanetById } from '../planetarium.data';
 import type { PlanetariumSettings } from '../planetarium.types';
 
-// Start preloading assets immediately
+// Detect mobile device (used for preloading decisions)
+const isMobileDevice = () => {
+  if (typeof window === 'undefined') return false;
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+};
+
+// Start preloading assets - but be conservative on mobile to avoid crashes
 if (typeof window !== 'undefined') {
-  preloadOverviewTextures(); // Overview planet textures
-  preloadSunTexture();       // Sun texture
-  preloadMoonTexture();      // Moon texture
-  preloadPlanetModels();     // Detailed GLB models
+  const isMobile = isMobileDevice();
+
+  // Always preload overview textures (small, needed immediately)
+  preloadOverviewTextures();
+
+  // On desktop, preload everything for smooth experience
+  // On mobile, skip heavy GLB models to prevent memory crashes
+  if (!isMobile) {
+    preloadSunTexture();
+    preloadMoonTexture();
+    preloadPlanetModels(); // Skip on mobile - these are 150MB+ total
+  }
 }
 
 interface PlanetariumShellProps {
@@ -95,14 +109,19 @@ export function PlanetariumShell({ initialPlanetId }: PlanetariumShellProps) {
   // Handle scene ready - use stable action directly
   const handleSceneReady = actions.setSceneReady;
 
-  // Detect mobile and adjust settings
+  // Detect mobile and adjust settings for performance
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
+    const mobile = isMobileDevice();
+    setIsMobile(mobile);
+    if (mobile) {
       setSettings(prev => ({
         ...prev,
         quality: 'low',
         showHUD: false,
+        showAtmosphere: false, // Disable atmosphere effect on mobile
+        showSolarSystemContext: false, // Disable context planets on mobile
       }));
     }
   }, []);
@@ -144,11 +163,13 @@ export function PlanetariumShell({ initialPlanetId }: PlanetariumShellProps) {
       <Canvas
         dpr={pixelRatio}
         gl={{
-          antialias: settings.quality === 'high',
-          powerPreference: 'high-performance',
+          antialias: !isMobile && settings.quality === 'high',
+          powerPreference: isMobile ? 'low-power' : 'high-performance',
           alpha: false,
+          // Limit precision on mobile to reduce memory usage
+          precision: isMobile ? 'lowp' : 'highp',
         }}
-        shadows={settings.quality === 'high'}
+        shadows={!isMobile && settings.quality === 'high'}
         style={{
           opacity: state.mode === 'intro' ? 0 : 1,
           transition: 'opacity 0.5s ease-out',

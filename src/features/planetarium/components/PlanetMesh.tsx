@@ -363,12 +363,25 @@ function getTextureComponent(props: PlanetMeshProps) {
   return <TexturePlanet {...props} />;
 }
 
+// Detect mobile device - used to avoid GLB models which crash iOS
+const isMobileDevice = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+};
+
 /**
  * Main PlanetMesh component
  * Uses GLB models for planets that have them, textures for others
+ * On mobile: always uses textures to prevent memory crashes
  */
 export function PlanetMesh(props: PlanetMeshProps) {
   const { planet, assets, autoRotate, rotationSpeed } = props;
+
+  // On mobile, always use textures - GLB models cause memory crashes on iOS
+  const isMobile = useMemo(() => isMobileDevice(), []);
+  if (isMobile) {
+    return getTextureComponent(props);
+  }
 
   // Check if this planet has a GLB model (no network request needed)
   const planetHasGlb = hasGlbModel(planet.id);
