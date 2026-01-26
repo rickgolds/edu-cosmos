@@ -27,6 +27,17 @@ export function getGlbPath(planetId: string): string {
 
 export const PLANET_ASSETS: PlanetAssetConfig[] = [
   {
+    planetId: 'sun',
+    renderMode: 'texture',
+    textureFile: '/planetarium/textures/sun_texture.jpg',
+    normalMapFile: null,
+    scale: 2.5,
+    rotationSpeed: 0.002,
+    tilt: 7.25,
+    cameraDistance: 10,
+    emissive: true, // Special flag for sun rendering
+  },
+  {
     planetId: 'mercury',
     renderMode: 'texture',
     textureFile: '/planetarium/textures/mercury_texture.jpg',
@@ -76,6 +87,16 @@ export const PLANET_ASSETS: PlanetAssetConfig[] = [
     // Legacy
     atmosphereColor: '#6ea5ff',
     atmosphereIntensity: 0.4,
+  },
+  {
+    planetId: 'moon',
+    renderMode: 'texture',
+    textureFile: '/planetarium/textures/moon_texture.jpg',
+    normalMapFile: null,
+    scale: 0.27, // Relative to Earth
+    rotationSpeed: 0.001, // Slow synchronous rotation
+    tilt: 1.5,
+    cameraDistance: 3,
   },
   {
     planetId: 'mars',
@@ -179,9 +200,11 @@ export function getPlanetAssets(planetId: string): PlanetAssetConfig | undefined
  * Fallback colors when textures are not available
  */
 export const FALLBACK_COLORS: Record<string, string> = {
+  sun: '#FDB813',
   mercury: '#8c7853',
   venus: '#e6c87a',
   earth: '#6b93d6',
+  moon: '#aaaaaa',
   mars: '#c1440e',
   jupiter: '#d8ca9d',
   saturn: '#ead6b8',

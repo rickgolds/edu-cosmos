@@ -68,6 +68,8 @@ export interface PlanetAssetConfig {
   atmosphere?: AtmosphereConfig;
   // Rings (Saturn, Uranus, Neptune)
   rings?: RingsConfig;
+  // Special rendering
+  emissive?: boolean; // For self-illuminated objects like the Sun
   // Legacy fields (for backwards compatibility)
   atmosphereColor?: string;
   atmosphereIntensity?: number;
@@ -88,6 +90,11 @@ export interface PlanetariumSettings {
   quality: QualityLevel;
   showHUD: boolean;
   showAtmosphere: boolean;
+  // Context Solar System settings (planet view)
+  showSolarSystemContext: boolean;
+  contextDistanceScale: number; // 0.3-0.8 exponent
+  contextSlowOrbits: boolean;
+  contextShowOrbits: boolean;
 }
 
 export interface ComparisonData {

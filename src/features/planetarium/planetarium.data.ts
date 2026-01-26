@@ -2,6 +2,51 @@ import { PlanetInfo } from './planetarium.types';
 
 export const PLANETS: PlanetInfo[] = [
   {
+    id: 'sun',
+    name: 'Sun',
+    namePL: 'Słońce',
+    subtitle: 'Nasza gwiazda',
+    description:
+      'Słońce to gwiazda w centrum naszego Układu Słonecznego. Jest kulą gorącej plazmy, która dostarcza energię niezbędną do życia na Ziemi. Stanowi 99,86% całkowitej masy Układu Słonecznego.',
+    radiusKm: 696340,
+    massKg: '1.99 × 10³⁰',
+    gravity: 274,
+    dayLengthHours: 609.12, // Rotation at equator (~25 days)
+    yearLengthDays: 0,
+    avgTempC: 5500, // Surface temperature
+    moons: 0,
+    color: '#FDB813',
+    hasAtmosphere: true,
+    hasRings: false,
+    funFacts: [
+      'Słońce to kula plazmy o temperaturze jądra 15 milionów °C',
+      'Światło ze Słońca dociera do Ziemi w około 8 minut',
+      'Słońce obraca się szybciej na równiku niż na biegunach',
+      'W każdej sekundzie Słońce zamienia 600 mln ton wodoru w hel',
+    ],
+    keyMissions: [
+      {
+        name: 'Parker Solar Probe',
+        year: 2018,
+        agency: 'NASA',
+        description: 'Najbliższa sonda przy Słońcu',
+      },
+      {
+        name: 'Solar Orbiter',
+        year: 2020,
+        agency: 'ESA/NASA',
+        description: 'Badanie biegunów Słońca',
+      },
+      {
+        name: 'SOHO',
+        year: 1995,
+        agency: 'ESA/NASA',
+        description: 'Obserwatorium Słońca',
+      },
+    ],
+    composition: ['Wodór (73%)', 'Hel (25%)', 'Cięższe pierwiastki (2%)'],
+  },
+  {
     id: 'mercury',
     name: 'Mercury',
     namePL: 'Merkury',
@@ -135,6 +180,51 @@ export const PLANETS: PlanetInfo[] = [
       },
     ],
     composition: ['N₂ (78%)', 'O₂ (21%)', 'Ar, CO₂, H₂O (1%)'],
+  },
+  {
+    id: 'moon',
+    name: 'Moon',
+    namePL: 'Księżyc',
+    subtitle: 'Naturalny satelita Ziemi',
+    description:
+      'Księżyc to jedyny naturalny satelita Ziemi i piąty co do wielkości księżyc w Układzie Słonecznym. Jest jedynym ciałem niebieskim poza Ziemią, na którym stanął człowiek.',
+    radiusKm: 1737.4,
+    massKg: '7.35 × 10²²',
+    gravity: 1.62,
+    dayLengthHours: 708.7, // ~29.5 Earth days (synchronous rotation)
+    yearLengthDays: 27.3, // Orbital period around Earth
+    avgTempC: -20, // Average (varies greatly)
+    moons: 0,
+    color: '#aaaaaa',
+    hasAtmosphere: false,
+    hasRings: false,
+    funFacts: [
+      'Księżyc oddala się od Ziemi o 3.8 cm rocznie',
+      'Ta sama strona Księżyca jest zawsze zwrócona ku Ziemi',
+      'Księżyc powstał z kolizji Ziemi z obiektem wielkości Marsa',
+      '12 ludzi chodziło po powierzchni Księżyca (1969-1972)',
+    ],
+    keyMissions: [
+      {
+        name: 'Apollo 11',
+        year: 1969,
+        agency: 'NASA',
+        description: 'Pierwsze lądowanie człowieka',
+      },
+      {
+        name: 'Luna 2',
+        year: 1959,
+        agency: 'ZSRR',
+        description: 'Pierwsza sonda na Księżycu',
+      },
+      {
+        name: 'Artemis',
+        year: 2024,
+        agency: 'NASA',
+        description: 'Powrót człowieka na Księżyc',
+      },
+    ],
+    composition: ['Krzemiany', 'Tlenek żelaza', 'Tlenek glinu', 'Lód wodny (bieguny)'],
   },
   {
     id: 'mars',
@@ -352,9 +442,11 @@ export const PLANETS: PlanetInfo[] = [
 ];
 
 export const PLANET_ORDER = [
+  'sun',
   'mercury',
   'venus',
   'earth',
+  'moon',
   'mars',
   'jupiter',
   'saturn',

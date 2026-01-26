@@ -8,6 +8,8 @@ import {
   Eye,
   X,
   Cloud,
+  Globe2,
+  Orbit,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { PlanetariumSettings, LightingPreset, QualityLevel } from '../planetarium.types';
@@ -29,14 +31,14 @@ export function PlanetControls({
 }: PlanetControlsProps) {
   return (
     <>
-      {/* Toggle button */}
+      {/* Toggle button - top right, next to info button */}
       <button
         onClick={onToggle}
         className={clsx(
-          'absolute top-4 left-4 z-10 p-2.5 rounded-lg border transition-all',
+          'absolute top-4 right-16 z-20 p-2.5 rounded-lg border backdrop-blur-sm transition-all',
           isOpen
             ? 'bg-planetarium-glow/20 border-planetarium-glow text-planetarium-glow'
-            : 'bg-planetarium-panel border-planetarium-border text-gray-400 hover:text-white hover:border-planetarium-glow/50'
+            : 'bg-black/50 border-white/10 text-gray-400 hover:text-white hover:bg-black/70 hover:border-white/20'
         )}
       >
         <Settings2 className="w-5 h-5" />
@@ -135,6 +137,46 @@ export function PlanetControls({
                     onChange={(checked) => onSettingsChange({ showAtmosphere: checked })}
                     icon={Cloud}
                   />
+                )}
+              </ControlSection>
+
+              {/* Solar System Context */}
+              <ControlSection icon={Globe2} title="Układ Słoneczny">
+                <ToggleSwitch
+                  label="Pokaż w tle"
+                  checked={settings.showSolarSystemContext}
+                  onChange={(checked) => onSettingsChange({ showSolarSystemContext: checked })}
+                  icon={Globe2}
+                />
+                {settings.showSolarSystemContext && (
+                  <>
+                    <Slider
+                      label="Skala odległości"
+                      min={0.4}
+                      max={0.7}
+                      step={0.05}
+                      value={settings.contextDistanceScale}
+                      onChange={(value) => onSettingsChange({ contextDistanceScale: value })}
+                    />
+                    <p className="text-xs text-gray-500 -mt-1 mb-2">
+                      {settings.contextDistanceScale < 0.4
+                        ? 'Planety bliżej siebie'
+                        : settings.contextDistanceScale > 0.6
+                        ? 'Większe odległości'
+                        : 'Zbalansowane'}
+                    </p>
+                    <ToggleSwitch
+                      label="Powolne orbity"
+                      checked={settings.contextSlowOrbits}
+                      onChange={(checked) => onSettingsChange({ contextSlowOrbits: checked })}
+                    />
+                    <ToggleSwitch
+                      label="Pokaż orbity"
+                      checked={settings.contextShowOrbits}
+                      onChange={(checked) => onSettingsChange({ contextShowOrbits: checked })}
+                      icon={Orbit}
+                    />
+                  </>
                 )}
               </ControlSection>
             </div>

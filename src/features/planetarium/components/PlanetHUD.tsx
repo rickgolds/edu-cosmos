@@ -54,8 +54,8 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
 
   return (
     <div className="absolute inset-0 pointer-events-none select-none">
-      {/* Top left - Target info (below controls button) */}
-      <div className="absolute top-16 left-4 space-y-2">
+      {/* Top left - Target info (below back button) */}
+      <div className="absolute top-20 left-4 space-y-2">
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Crosshair className="w-4 h-4" />
@@ -76,8 +76,8 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         </div>
       </div>
 
-      {/* Top right - Status (below info button) */}
-      <div className="absolute top-16 right-4 space-y-2">
+      {/* Top right - Status (below buttons) */}
+      <div className="absolute top-20 right-4 space-y-2">
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Clock className="w-4 h-4" />
@@ -105,8 +105,8 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         </div>
       </div>
 
-      {/* Bottom left - Telemetry (above planet selector) */}
-      <div className="absolute bottom-28 left-4">
+      {/* Bottom left - Telemetry */}
+      <div className="absolute bottom-8 left-4">
         <div className="hud-panel">
           <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
             <TelemetryRow label="Radius" value={formatDistance(planet.radiusKm)} />
@@ -117,8 +117,8 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         </div>
       </div>
 
-      {/* Bottom right - Mission status (above planet selector) */}
-      <div className="absolute bottom-28 right-4">
+      {/* Bottom right - Mission status */}
+      <div className="absolute bottom-8 right-4">
         <div className="hud-panel">
           <div className="text-xs text-planetarium-glow uppercase tracking-wider">
             Missions: {planet.keyMissions.length}
@@ -156,16 +156,16 @@ function CornerBrackets() {
   return (
     <>
       <div
-        className={`${cornerStyle} top-14 left-2 border-l-2 border-t-2`}
+        className={`${cornerStyle} top-16 left-2 border-l-2 border-t-2`}
       />
       <div
-        className={`${cornerStyle} top-14 right-2 border-r-2 border-t-2`}
+        className={`${cornerStyle} top-16 right-2 border-r-2 border-t-2`}
       />
       <div
-        className={`${cornerStyle} bottom-24 left-2 border-l-2 border-b-2`}
+        className={`${cornerStyle} bottom-4 left-2 border-l-2 border-b-2`}
       />
       <div
-        className={`${cornerStyle} bottom-24 right-2 border-r-2 border-b-2`}
+        className={`${cornerStyle} bottom-4 right-2 border-r-2 border-b-2`}
       />
     </>
   );

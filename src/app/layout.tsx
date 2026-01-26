@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Navbar } from '@/components/ui/Navbar';
-import { Footer } from '@/components/ui/Footer';
+import { LayoutWrapper } from '@/components/ui/LayoutWrapper';
 
 export const metadata: Metadata = {
   title: {
@@ -48,20 +47,7 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className="min-h-screen flex flex-col">
-        {/* Stars background overlay */}
-        <div className="fixed inset-0 stars-bg opacity-30 pointer-events-none z-0" />
-
-        {/* Gradient overlays */}
-        <div className="fixed top-0 left-1/4 w-96 h-96 bg-glow-purple opacity-20 blur-3xl pointer-events-none z-0" />
-        <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-glow-cyan opacity-20 blur-3xl pointer-events-none z-0" />
-
-        <Navbar />
-
-        <main className="flex-1 relative z-10">
-          {children}
-        </main>
-
-        <Footer />
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );
