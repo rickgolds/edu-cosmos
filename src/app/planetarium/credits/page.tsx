@@ -88,7 +88,7 @@ export default function CreditsPage() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-3xl font-display font-bold text-white mb-4">
-            Credits & Attribution
+            Podziękowania i źródła
           </h1>
           <p className="text-gray-400">
             3D Planetarium korzysta z wielu wspaniałych zasobów open source i

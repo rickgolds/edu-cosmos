@@ -21,8 +21,8 @@ export function TransitionHUD({
   progress,
 }: TransitionHUDProps) {
   const message = direction === 'to-planet'
-    ? `Approaching: ${planetName}`
-    : 'Returning to Solar System';
+    ? `Zbliżanie do: ${planetName}`
+    : 'Powrót do Układu Słonecznego';
 
   return (
     <AnimatePresence>
@@ -96,7 +96,7 @@ export function TransitionHUD({
 
           {/* Corner HUD elements */}
           <div className="absolute bottom-8 left-8 text-xs text-gray-500 tracking-wider">
-            <span className="text-cyan-500">ESC</span> to cancel
+            <span className="text-cyan-500">ESC</span> aby anulować
           </div>
 
           <div className="absolute bottom-8 right-8 text-xs text-gray-500 tracking-wider font-mono">

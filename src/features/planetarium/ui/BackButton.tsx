@@ -22,7 +22,7 @@ export function BackButton({ onClick }: BackButtonProps) {
     >
       <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
       <Globe className="w-4 h-4" />
-      <span className="text-sm tracking-wide">Solar System</span>
+      <span className="text-sm tracking-wide">Układ Słoneczny</span>
     </motion.button>
   );
 }

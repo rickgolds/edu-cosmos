@@ -59,16 +59,16 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Crosshair className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wider">Target</span>
+            <span className="text-xs uppercase tracking-wider">Cel</span>
           </div>
-          <div className="mt-1 text-lg font-bold text-white">{planet.name}</div>
-          <div className="text-xs text-gray-400">{planet.namePL}</div>
+          <div className="mt-1 text-lg font-bold text-white">{planet.namePL}</div>
+          <div className="text-xs text-gray-400">{planet.name}</div>
         </div>
 
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Thermometer className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wider">Temp</span>
+            <span className="text-xs uppercase tracking-wider">Temp.</span>
           </div>
           <div className="mt-1 text-sm font-mono text-white">
             {formatTemperature(planet.avgTempC)}
@@ -81,7 +81,7 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Clock className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wider">UTC</span>
+            <span className="text-xs uppercase tracking-wider">Czas</span>
           </div>
           <div className="mt-1 text-sm font-mono text-white">{time}</div>
         </div>
@@ -89,7 +89,7 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
         <div className="hud-panel">
           <div className="flex items-center gap-2 text-planetarium-glow">
             <Signal className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-wider">Signal</span>
+            <span className="text-xs uppercase tracking-wider">Sygnał</span>
           </div>
           <div className="mt-1 flex items-center gap-2">
             <div className="flex-1 h-1 bg-planetarium-border rounded overflow-hidden">
@@ -109,10 +109,10 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
       <div className="absolute bottom-8 left-4">
         <div className="hud-panel">
           <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
-            <TelemetryRow label="Radius" value={formatDistance(planet.radiusKm)} />
-            <TelemetryRow label="Gravity" value={formatGravity(planet.gravity)} />
-            <TelemetryRow label="Moons" value={planet.moons.toString()} />
-            <TelemetryRow label="Mass" value={planet.massKg} />
+            <TelemetryRow label="Promień" value={formatDistance(planet.radiusKm)} />
+            <TelemetryRow label="Grawitacja" value={formatGravity(planet.gravity)} />
+            <TelemetryRow label="Księżyce" value={planet.moons.toString()} />
+            <TelemetryRow label="Masa" value={planet.massKg} />
           </div>
         </div>
       </div>
@@ -121,10 +121,10 @@ export function PlanetHUD({ planet, visible }: PlanetHUDProps) {
       <div className="absolute bottom-8 right-4">
         <div className="hud-panel">
           <div className="text-xs text-planetarium-glow uppercase tracking-wider">
-            Missions: {planet.keyMissions.length}
+            Misje: {planet.keyMissions.length}
           </div>
           <div className="mt-1 text-xs text-gray-400">
-            Latest: {planet.keyMissions[planet.keyMissions.length - 1]?.name || 'N/A'}
+            Ostatnia: {planet.keyMissions[planet.keyMissions.length - 1]?.name || 'Brak'}
           </div>
         </div>
       </div>

@@ -74,7 +74,7 @@ export function PlanetariumIntro({ visible, onComplete }: PlanetariumIntroProps)
               transition={{ duration: 0.6, delay: 0.6 }}
               className="text-sm md:text-base tracking-[0.2em] text-gray-400 uppercase"
             >
-              Exploring the Solar System
+              Odkrywanie Układu Słonecznego
             </motion.p>
 
             {/* Loading indicator */}

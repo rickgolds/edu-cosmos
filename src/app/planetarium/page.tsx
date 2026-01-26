@@ -20,7 +20,7 @@ function PlanetariumLoader() {
     <div className="h-screen w-screen bg-[#030308] flex items-center justify-center">
       <div className="text-center">
         <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mx-auto mb-4" />
-        <p className="text-sm text-gray-500 tracking-wide">Loading Planetarium...</p>
+        <p className="text-sm text-gray-500 tracking-wide">Ładowanie Planetarium...</p>
       </div>
     </div>
   );

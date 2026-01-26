@@ -53,7 +53,7 @@ export function PlanetariumHeader({
                     href="/planetarium"
                     className="text-gray-400 hover:text-white transition-colors"
                   >
-                    Solar System
+                    Układ Słoneczny
                   </Link>
 
                   {(mode === 'planet' || mode === 'transition') && currentPlanetName && (
@@ -72,7 +72,7 @@ export function PlanetariumHeader({
                 {mode === 'overview' && (
                   <div className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30">
                     <span className="text-xs text-cyan-400 tracking-wider uppercase">
-                      Overview
+                      Przegląd
                     </span>
                   </div>
                 )}
@@ -80,7 +80,7 @@ export function PlanetariumHeader({
                 {mode === 'planet' && (
                   <div className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30">
                     <span className="text-xs text-purple-400 tracking-wider uppercase">
-                      Exploring
+                      Eksploracja
                     </span>
                   </div>
                 )}

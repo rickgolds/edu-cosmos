@@ -13,7 +13,7 @@ const glbCache = new Map<string, THREE.Group>();
 
 // Celestial bodies that have GLB models available (to avoid 404 requests)
 const PLANETS_WITH_GLB: string[] = [
-  'sun',       // 40MB - detailed model
+  //'sun',       // 40MB - detailed model
   // 'moon',      // 20MB - detailed model
   'earth',     // 62MB - detailed model
   'mars',      // 14MB - detailed model
@@ -159,7 +159,6 @@ function EmissivePlanet({
 }: PlanetMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
   const segments = quality === 'high' ? 64 : 32;
 
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -203,10 +202,6 @@ function EmissivePlanet({
     if (meshRef.current && autoRotate) {
       meshRef.current.rotation.y += assets.rotationSpeed * rotationSpeed * delta * 50;
     }
-    // Animate glow
-    if (glowRef.current) {
-      glowRef.current.rotation.z += delta * 0.05;
-    }
   });
 
   return (
@@ -218,28 +213,6 @@ function EmissivePlanet({
           ref={materialRef}
           map={texture}
           color={fallbackColor}
-        />
-      </mesh>
-
-      {/* Inner glow */}
-      <mesh scale={assets.scale * 1.3}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial
-          color="#FF6B00"
-          transparent
-          opacity={0.3}
-          side={THREE.BackSide}
-        />
-      </mesh>
-
-      {/* Outer corona */}
-      <mesh ref={glowRef} scale={assets.scale * 1.8}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial
-          color={fallbackColor}
-          transparent
-          opacity={0.15}
-          side={THREE.BackSide}
         />
       </mesh>
     </group>
