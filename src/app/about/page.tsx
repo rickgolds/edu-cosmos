@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
-import { Rocket, BookOpen, Brain, Search, BarChart3, Code, Database, Palette, ExternalLink } from 'lucide-react';
+import { Rocket, BookOpen, Brain, Search, BarChart3, Code, Database, Palette, ExternalLink, User, GraduationCap } from 'lucide-react';
 import { Card, CardTitle, Badge } from '@/components/ui';
 
 export const metadata: Metadata = {
   title: 'O aplikacji',
-  description: 'Informacje o projekcie CosmosEdu - aplikacji edukacyjnej o kosmosie.',
+  description: 'Informacje o projekcie CosmosEdu - aplikacji edukacyjnej o kosmosie. Praca inżynierska Gracjana Zalewskiego.',
 };
 
 export default function AboutPage() {
@@ -138,12 +138,46 @@ export default function AboutPage() {
         </div>
       </Card>
 
+      {/* Author section */}
+      <Card padding="lg" className="mb-8 border-accent-cyan/30">
+        <CardTitle as="h2" className="mb-6">
+          Autor projektu
+        </CardTitle>
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex-shrink-0">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-cyan/20 to-accent-purple/20 border border-accent-cyan/30 flex items-center justify-center">
+              <User className="w-10 h-10 text-accent-cyan" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <h3 className="text-xl font-semibold text-white">Gracjan Zalewski</h3>
+              <p className="text-gray-400">Autor i twórca aplikacji</p>
+            </div>
+            <div className="flex items-start gap-2 text-gray-300">
+              <GraduationCap className="w-5 h-5 text-accent-purple mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Politechnika Koszalińska</p>
+                <p className="text-sm text-gray-400">Wydział Elektroniki i Informatyki</p>
+              </div>
+            </div>
+            <div className="pt-2">
+              <Badge variant="cyan" className="mr-2">Praca inżynierska</Badge>
+              <Badge variant="default">2025</Badge>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* Footer note */}
-      <div className="text-center text-gray-500 text-sm">
-        <p>
-          Projekt wykonany jako praca inżynierska • {new Date().getFullYear()}
+      <div className="text-center text-gray-500 text-sm border-t border-cosmos-border pt-8">
+        <p className="text-base text-gray-400 mb-2">
+          CosmosEdu &copy; {new Date().getFullYear()} Gracjan Zalewski
         </p>
-        <p className="mt-1">
+        <p>
+          Praca inżynierska &bull; Politechnika Koszalińska &bull; Wydział Elektroniki i Informatyki
+        </p>
+        <p className="mt-2 text-gray-500">
           Dane kosmiczne pochodzą z oficjalnych API NASA i są udostępniane publicznie.
         </p>
       </div>

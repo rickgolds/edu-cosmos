@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     'galaktyki',
     'rakiety',
   ],
-  authors: [{ name: 'CosmosEdu Team' }],
+  authors: [{ name: 'Gracjan Zalewski' }],
   openGraph: {
     title: 'CosmosEdu - Poznaj Kosmos',
     description:

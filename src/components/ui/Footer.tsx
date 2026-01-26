@@ -83,26 +83,33 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-cosmos-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} CosmosEdu. Projekt pracy inżynierskiej.
-          </p>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/about"
-              className="text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              O projekcie
-            </Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors"
-              aria-label="GitHub"
-            >
-              <Github className="w-5 h-5" />
-            </a>
+        <div className="mt-12 pt-8 border-t border-cosmos-border">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+            <div className="text-center sm:text-left">
+              <p className="text-gray-400 text-sm">
+                © {new Date().getFullYear()} CosmosEdu &bull; <span className="text-white">Gracjan Zalewski</span>
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                Praca inżynierska &bull; Politechnika Koszalińska &bull; Wydział Elektroniki i Informatyki
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/about"
+                className="text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                O projekcie
+              </Link>
+              <a
+                href="https://github.com/rickgolds/edu-cosmos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="GitHub"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
