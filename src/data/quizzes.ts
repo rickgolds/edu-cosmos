@@ -1,5 +1,6 @@
 import type { Quiz } from '@/features/quiz-engine';
 import { LESSON_CATEGORIES } from '@/lib/constants';
+import { ADAPTIVE_TAGS } from '@/features/adaptive';
 
 export const quizzes: Quiz[] = [
   {
@@ -18,7 +19,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Neptun', isCorrect: false },
           { id: 'd', text: 'Uran', isCorrect: false }
         ],
-        explanation: 'Jowisz jest największą planetą w Układzie Słonecznym. Ma średnicę 139 820 km – ponad 11 razy większą niż Ziemia.'
+        explanation: 'Jowisz jest największą planetą w Układzie Słonecznym. Ma średnicę 139 820 km – ponad 11 razy większą niż Ziemia.',
+        tags: [ADAPTIVE_TAGS.PLANETS, ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS],
+        difficultyLevel: 1,
       },
       {
         id: 'qq1-2',
@@ -29,7 +32,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Wielka Mgławica', isCorrect: false },
           { id: 'd', text: 'Orion', isCorrect: false }
         ],
-        explanation: 'Nasza galaktyka to Droga Mleczna (Milky Way). Jest to galaktyka spiralna zawierająca 100-400 miliardów gwiazd.'
+        explanation: 'Nasza galaktyka to Droga Mleczna (Milky Way). Jest to galaktyka spiralna zawierająca 100-400 miliardów gwiazd.',
+        tags: [ADAPTIVE_TAGS.GALAXIES],
+        difficultyLevel: 1,
       },
       {
         id: 'qq1-3',
@@ -40,7 +45,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Jednostka masy', isCorrect: false },
           { id: 'd', text: 'Jednostka jasności', isCorrect: false }
         ],
-        explanation: 'Rok świetlny to jednostka odległości – dystans, jaki światło pokonuje w ciągu jednego roku (około 9,46 biliona km).'
+        explanation: 'Rok świetlny to jednostka odległości – dystans, jaki światło pokonuje w ciągu jednego roku (około 9,46 biliona km).',
+        tags: [ADAPTIVE_TAGS.SCALES_DISTANCES],
+        difficultyLevel: 1,
       },
       {
         id: 'qq1-4',
@@ -51,7 +58,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Biały', isCorrect: true },
           { id: 'd', text: 'Czerwony', isCorrect: false }
         ],
-        explanation: 'Słońce widziane z kosmosu jest białe. Widzimy je jako żółte z Ziemi, ponieważ atmosfera rozprasza światło niebieskie.'
+        explanation: 'Słońce widziane z kosmosu jest białe. Widzimy je jako żółte z Ziemi, ponieważ atmosfera rozprasza światło niebieskie.',
+        tags: [ADAPTIVE_TAGS.STARS_BASICS, ADAPTIVE_TAGS.LIGHT_SPECTRUM],
+        difficultyLevel: 2,
       },
       {
         id: 'qq1-5',
@@ -62,7 +71,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Uran', isCorrect: false },
           { id: 'd', text: 'Neptun', isCorrect: false }
         ],
-        explanation: 'Saturn ma ponad 140 znanych księżyców (stan na 2023), wyprzedzając Jowisza z około 95 księżycami.'
+        explanation: 'Saturn ma ponad 140 znanych księżyców (stan na 2023), wyprzedzając Jowisza z około 95 księżycami.',
+        tags: [ADAPTIVE_TAGS.PLANETS, ADAPTIVE_TAGS.MOONS],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -82,7 +93,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Uran', isCorrect: false },
           { id: 'd', text: 'Neptun', isCorrect: false }
         ],
-        explanation: 'Pierścienie Saturna są najbardziej widoczne i znane. Wszystkie gazowe olbrzymy mają pierścienie, ale tylko Saturna są łatwo widoczne.'
+        explanation: 'Pierścienie Saturna są najbardziej widoczne i znane. Wszystkie gazowe olbrzymy mają pierścienie, ale tylko Saturna są łatwo widoczne.',
+        tags: [ADAPTIVE_TAGS.PLANETS],
+        difficultyLevel: 1,
       },
       {
         id: 'ss-q2',
@@ -93,7 +106,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Wenus', isCorrect: true },
           { id: 'd', text: 'Pluton', isCorrect: false }
         ],
-        explanation: 'Wenus ma średnicę 12 104 km, podczas gdy Ziemia ma 12 742 km. To różnica zaledwie 5%, dlatego Wenus nazywana jest "bliźniaczką Ziemi".'
+        explanation: 'Wenus ma średnicę 12 104 km, podczas gdy Ziemia ma 12 742 km. To różnica zaledwie 5%, dlatego Wenus nazywana jest "bliźniaczką Ziemi".',
+        tags: [ADAPTIVE_TAGS.PLANETS],
+        difficultyLevel: 1,
       },
       {
         id: 'ss-q3',
@@ -104,7 +119,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Między Saturnem a Uranem', isCorrect: false },
           { id: 'd', text: 'Za Neptunem', isCorrect: false }
         ],
-        explanation: 'Pas Asteroidów znajduje się między orbitami Marsa i Jowisza. Zawiera miliony asteroid, ale ich łączna masa to tylko około 4% masy Księżyca.'
+        explanation: 'Pas Asteroidów znajduje się między orbitami Marsa i Jowisza. Zawiera miliony asteroid, ale ich łączna masa to tylko około 4% masy Księżyca.',
+        tags: [ADAPTIVE_TAGS.ASTEROIDS_COMETS, ADAPTIVE_TAGS.ORBITS],
+        difficultyLevel: 2,
       },
       {
         id: 'ss-q4',
@@ -115,7 +132,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Uran', isCorrect: true },
           { id: 'd', text: 'Jowisz', isCorrect: false }
         ],
-        explanation: 'Oś obrotu Urana jest nachylona o 98°, co oznacza, że planeta praktycznie "toczy się" wokół Słońca. Prawdopodobnie spowodowała to kolizja z dużym ciałem.'
+        explanation: 'Oś obrotu Urana jest nachylona o 98°, co oznacza, że planeta praktycznie "toczy się" wokół Słońca. Prawdopodobnie spowodowała to kolizja z dużym ciałem.',
+        tags: [ADAPTIVE_TAGS.PLANETS, ADAPTIVE_TAGS.ORBITS],
+        difficultyLevel: 2,
       },
       {
         id: 'ss-q5',
@@ -126,7 +145,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Pas asteroid między Marsem a Jowiszem', isCorrect: false },
           { id: 'd', text: 'Chmura komet otaczająca Słońce', isCorrect: false }
         ],
-        explanation: 'Pas Kuipera to region za orbitą Neptuna zawierający miliardy lodowych ciał, w tym planety karłowate jak Pluton i Eris.'
+        explanation: 'Pas Kuipera to region za orbitą Neptuna zawierający miliardy lodowych ciał, w tym planety karłowate jak Pluton i Eris.',
+        tags: [ADAPTIVE_TAGS.ASTEROIDS_COMETS, ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -146,7 +167,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Niebieskie', isCorrect: true },
           { id: 'd', text: 'Pomarańczowe', isCorrect: false }
         ],
-        explanation: 'Niebieskie gwiazdy są najgorętsze (powyżej 10 000 K). Czerwone są najchłodniejsze (około 3000 K). To odwrotnie niż intuicja!'
+        explanation: 'Niebieskie gwiazdy są najgorętsze (powyżej 10 000 K). Czerwone są najchłodniejsze (około 3000 K). To odwrotnie niż intuicja!',
+        tags: [ADAPTIVE_TAGS.STAR_TYPES, ADAPTIVE_TAGS.LIGHT_SPECTRUM],
+        difficultyLevel: 2,
       },
       {
         id: 'st-q2',
@@ -157,7 +180,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Czarna dziura', isCorrect: true },
           { id: 'd', text: 'Nic', isCorrect: false }
         ],
-        explanation: 'Gwiazdy o masie powyżej około 25 mas Słońca po eksplozji supernowej tworzą czarne dziury. Mniejsze mogą tworzyć gwiazdy neutronowe.'
+        explanation: 'Gwiazdy o masie powyżej około 25 mas Słońca po eksplozji supernowej tworzą czarne dziury. Mniejsze mogą tworzyć gwiazdy neutronowe.',
+        tags: [ADAPTIVE_TAGS.STELLAR_EVOLUTION, ADAPTIVE_TAGS.BLACK_HOLES],
+        difficultyLevel: 2,
       },
       {
         id: 'st-q3',
@@ -168,7 +193,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Rozszczepienie atomu', isCorrect: false },
           { id: 'd', text: 'Grawitacja', isCorrect: false }
         ],
-        explanation: 'Gwiazdy czerpią energię z fuzji jądrowej – łączenia lekkich jąder (głównie wodoru) w cięższe (hel), uwalniając ogromne ilości energii.'
+        explanation: 'Gwiazdy czerpią energię z fuzji jądrowej – łączenia lekkich jąder (głównie wodoru) w cięższe (hel), uwalniając ogromne ilości energii.',
+        tags: [ADAPTIVE_TAGS.STARS_BASICS],
+        difficultyLevel: 1,
       },
       {
         id: 'st-q4',
@@ -179,7 +206,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Proxima Centauri', isCorrect: true },
           { id: 'd', text: 'Betelgeza', isCorrect: false }
         ],
-        explanation: 'Proxima Centauri (część układu Alpha Centauri) jest najbliższą gwiazdą do Słońca, odległą o 4,24 roku świetlnego.'
+        explanation: 'Proxima Centauri (część układu Alpha Centauri) jest najbliższą gwiazdą do Słońca, odległą o 4,24 roku świetlnego.',
+        tags: [ADAPTIVE_TAGS.STARS_BASICS, ADAPTIVE_TAGS.SCALES_DISTANCES],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -199,7 +228,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Alan Shepard', isCorrect: false },
           { id: 'd', text: 'John Glenn', isCorrect: false }
         ],
-        explanation: 'Jurij Gagarin z ZSRR został pierwszym człowiekiem w kosmosie 12 kwietnia 1961 roku podczas misji Wostok 1.'
+        explanation: 'Jurij Gagarin z ZSRR został pierwszym człowiekiem w kosmosie 12 kwietnia 1961 roku podczas misji Wostok 1.',
+        tags: [ADAPTIVE_TAGS.SPACE_MISSIONS],
+        difficultyLevel: 1,
       },
       {
         id: 'ex-q2',
@@ -210,7 +241,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: '1972', isCorrect: false },
           { id: 'd', text: '1975', isCorrect: false }
         ],
-        explanation: 'Neil Armstrong i Buzz Aldrin wylądowali na Księżycu 20 lipca 1969 roku podczas misji Apollo 11.'
+        explanation: 'Neil Armstrong i Buzz Aldrin wylądowali na Księżycu 20 lipca 1969 roku podczas misji Apollo 11.',
+        tags: [ADAPTIVE_TAGS.SPACE_MISSIONS, ADAPTIVE_TAGS.MOONS],
+        difficultyLevel: 1,
       },
       {
         id: 'ex-q3',
@@ -221,7 +254,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'New Horizons', isCorrect: false },
           { id: 'd', text: 'Cassini', isCorrect: false }
         ],
-        explanation: 'Voyager 1, wystrzelony w 1977 roku, jako pierwszy obiekt stworzony przez człowieka opuścił heliosferę w 2012 roku.'
+        explanation: 'Voyager 1, wystrzelony w 1977 roku, jako pierwszy obiekt stworzony przez człowieka opuścił heliosferę w 2012 roku.',
+        tags: [ADAPTIVE_TAGS.SPACE_MISSIONS, ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS],
+        difficultyLevel: 2,
       },
       {
         id: 'ex-q4',
@@ -232,7 +267,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Skylab', isCorrect: false },
           { id: 'd', text: 'Tiangong', isCorrect: false }
         ],
-        explanation: 'ISS (International Space Station) to Międzynarodowa Stacja Kosmiczna, działająca na orbicie od 1998 roku.'
+        explanation: 'ISS (International Space Station) to Międzynarodowa Stacja Kosmiczna, działająca na orbicie od 1998 roku.',
+        tags: [ADAPTIVE_TAGS.SPACE_MISSIONS],
+        difficultyLevel: 1,
       },
       {
         id: 'ex-q5',
@@ -243,7 +280,9 @@ export const quizzes: Quiz[] = [
           { id: 'c', text: 'Curiosity i Perseverance', isCorrect: true },
           { id: 'd', text: 'Sojourner', isCorrect: false }
         ],
-        explanation: 'Curiosity (od 2012) i Perseverance (od 2021) to obecnie działające łaziki NASA na Marsie.'
+        explanation: 'Curiosity (od 2012) i Perseverance (od 2021) to obecnie działające łaziki NASA na Marsie.',
+        tags: [ADAPTIVE_TAGS.SPACE_MISSIONS, ADAPTIVE_TAGS.PLANETS],
+        difficultyLevel: 2,
       }
     ]
   }

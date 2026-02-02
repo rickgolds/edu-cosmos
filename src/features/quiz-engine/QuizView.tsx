@@ -4,11 +4,11 @@ import { Card, Button, Badge } from '@/components/ui';
 import { CheckCircle, XCircle, ArrowRight, RotateCcw, Trophy, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { Quiz, QuizResult, AnswerOption } from './quiz.types';
-import { useQuiz } from './useQuiz';
+import { useQuiz, type AdaptiveQuizData } from './useQuiz';
 
 interface QuizViewProps {
   quiz: Quiz;
-  onComplete?: (result: QuizResult) => void;
+  onComplete?: (result: QuizResult, adaptiveData?: AdaptiveQuizData) => void;
   onRestart?: () => void;
 }
 
@@ -19,6 +19,7 @@ export function QuizView({ quiz, onComplete, onRestart }: QuizViewProps) {
     isLastQuestion,
     hasAnswered,
     result,
+    adaptiveData,
     progress,
     actions,
   } = useQuiz(quiz);
@@ -40,7 +41,7 @@ export function QuizView({ quiz, onComplete, onRestart }: QuizViewProps) {
     if (isLastQuestion && state.showFeedback) {
       actions.nextQuestion();
       if (result && onComplete) {
-        onComplete(result);
+        onComplete(result, adaptiveData ?? undefined);
       }
     } else {
       actions.nextQuestion();

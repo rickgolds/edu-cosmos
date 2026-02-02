@@ -10,7 +10,7 @@ export const APP_NAME = 'CosmosEdu';
 export const APP_DESCRIPTION = 'Interaktywna aplikacja edukacyjna o kosmosie';
 
 // Progress data version (for migrations)
-export const PROGRESS_VERSION = 3;
+export const PROGRESS_VERSION = 4;
 
 // Local storage keys
 export const STORAGE_KEYS = {

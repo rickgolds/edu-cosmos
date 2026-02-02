@@ -1,8 +1,10 @@
 'use client';
 
 import { useReducer, useCallback, useMemo } from 'react';
-import type { Quiz, QuizState, QuizAction, QuizResult } from './quiz.types';
+import type { Quiz, QuizState, QuizAction, QuizResult, Question } from './quiz.types';
 import { QUIZ_SETTINGS } from '@/lib/constants';
+import type { AdaptiveTag, DifficultyLevel, MasteryUpdateParams } from '@/features/adaptive';
+import { ADAPTIVE_TAGS, DIFFICULTY_MAP } from '@/features/adaptive';
 
 const initialState: QuizState = {
   currentQuestionIndex: 0,
@@ -58,6 +60,55 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
     default:
       return state;
   }
+}
+
+/**
+ * Get tags from a question (with fallback to category-based tags)
+ */
+function getQuestionTags(question: Question): AdaptiveTag[] {
+  if (question.tags && question.tags.length > 0) {
+    return question.tags;
+  }
+
+  // Fallback: map category to tags
+  const categoryTagMap: Record<string, AdaptiveTag[]> = {
+    'solar-system': [ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS, ADAPTIVE_TAGS.PLANETS],
+    stars: [ADAPTIVE_TAGS.STARS_BASICS],
+    galaxies: [ADAPTIVE_TAGS.GALAXIES],
+    exploration: [ADAPTIVE_TAGS.SPACE_MISSIONS],
+    rockets: [ADAPTIVE_TAGS.ROCKETS, ADAPTIVE_TAGS.PHYSICS_NEWTON],
+    telescopes: [ADAPTIVE_TAGS.TELESCOPES],
+  };
+
+  return categoryTagMap[question.category || ''] || [ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS];
+}
+
+/**
+ * Get difficulty level from a question
+ */
+function getQuestionDifficulty(question: Question): DifficultyLevel {
+  if (question.difficultyLevel) {
+    return question.difficultyLevel;
+  }
+
+  if (question.difficulty) {
+    return DIFFICULTY_MAP[question.difficulty] || 2;
+  }
+
+  return 2; // Default: intermediate
+}
+
+/**
+ * Get the correct answer ID from a question
+ */
+function getCorrectAnswerId(question: Question): string {
+  const correctOption = question.options.find((opt) => opt.isCorrect);
+  return correctOption?.id || '';
+}
+
+export interface AdaptiveQuizData {
+  /** Data needed for updateMastery calls */
+  masteryUpdates: MasteryUpdateParams[];
 }
 
 export function useQuiz(quiz: Quiz) {
@@ -134,12 +185,39 @@ export function useQuiz(quiz: Quiz) {
     };
   }, [state, quiz]);
 
+  // Generate adaptive learning data when quiz is complete
+  const adaptiveData = useMemo((): AdaptiveQuizData | null => {
+    if (!state.isComplete) return null;
+
+    const masteryUpdates: MasteryUpdateParams[] = quiz.questions.map((question) => {
+      const selectedAnswerId = state.answers[question.id];
+      const selectedAnswer = question.options.find(
+        (opt) => opt.id === selectedAnswerId
+      );
+      const isCorrect = selectedAnswer?.isCorrect || false;
+      const correctAnswerId = getCorrectAnswerId(question);
+
+      return {
+        questionId: question.id,
+        quizId: quiz.id,
+        tags: getQuestionTags(question),
+        difficulty: getQuestionDifficulty(question),
+        isCorrect,
+        selectedAnswerId: selectedAnswerId || '',
+        correctAnswerId,
+      };
+    });
+
+    return { masteryUpdates };
+  }, [state, quiz]);
+
   return {
     state,
     currentQuestion,
     isLastQuestion,
     hasAnswered,
     result,
+    adaptiveData,
     progress: {
       current: state.currentQuestionIndex + 1,
       total: quiz.questions.length,

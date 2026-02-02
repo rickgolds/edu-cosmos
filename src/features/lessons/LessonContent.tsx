@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Clock, BookOpen, ArrowRight, CheckCircle, Info, AlertTriangle, Lightbulb } from 'lucide-react';
 import { Card, Badge, Button } from '@/components/ui';
-import { QuizView } from '@/features/quiz-engine';
+import { QuizView, type AdaptiveQuizData } from '@/features/quiz-engine';
 import { useProgress } from '@/hooks';
 import { CATEGORY_LABELS, DIFFICULTY_LABELS } from '@/lib/constants';
 import type { Lesson, ContentBlock } from '@/data/lessons';
@@ -16,7 +16,7 @@ interface LessonContentProps {
 
 export function LessonContent({ lesson }: LessonContentProps) {
   const [showQuiz, setShowQuiz] = useState(false);
-  const { completeLesson, getLessonProgress, recordActivity } = useProgress();
+  const { completeLesson, getLessonProgress, recordActivity, updateMastery } = useProgress();
 
   const progress = getLessonProgress(lesson.slug);
 
@@ -28,7 +28,14 @@ export function LessonContent({ lesson }: LessonContentProps) {
     passingScore: 60,
   };
 
-  const handleQuizComplete = (result: QuizResult) => {
+  const handleQuizComplete = (result: QuizResult, adaptiveData?: AdaptiveQuizData) => {
+    // Update mastery for each question answered
+    if (adaptiveData?.masteryUpdates) {
+      for (const update of adaptiveData.masteryUpdates) {
+        updateMastery(update);
+      }
+    }
+
     completeLesson(lesson.slug, result.percentage);
   };
 

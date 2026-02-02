@@ -1,3 +1,5 @@
+import type { AdaptiveTag, DifficultyLevel } from '@/features/adaptive';
+
 export interface AnswerOption {
   id: string;
   text: string;
@@ -12,6 +14,9 @@ export interface Question {
   explanation: string; // Wyjaśnienie po odpowiedzi
   category?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  // Adaptive learning fields (v4)
+  tags?: AdaptiveTag[];
+  difficultyLevel?: DifficultyLevel; // 1, 2, or 3
 }
 
 export interface Quiz {

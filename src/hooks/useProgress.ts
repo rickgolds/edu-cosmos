@@ -4,6 +4,23 @@ import { useCallback, useMemo, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { STORAGE_KEYS, PROGRESS_VERSION, BADGES } from '@/lib/constants';
 import { calculateStreak, formatDateForApi } from '@/lib/date-utils';
+import {
+  type AdaptiveTag,
+  type TagStat,
+  type QuestionAttempt,
+  type MisconceptionFlag,
+  type RecommendationState,
+  type MasteryUpdateParams,
+  initializeTagStats,
+  ensureAllTagsExist,
+  processMasteryUpdate,
+  evaluateMisconceptionRules,
+  resolveMisconception as resolveMisconceptionFn,
+  generateRecommendations,
+  isRecommendationsCacheValid,
+  type LessonWithTags,
+  type QuizWithTags,
+} from '@/features/adaptive';
 
 // Progress data types
 export interface LessonProgress {
@@ -63,6 +80,11 @@ export interface ProgressData {
   // New fields (v3) - Planetarium
   planetariumVisits: PlanetVisit[];
   planetariumTotalSeconds: number;
+  // New fields (v4) - Adaptive Learning
+  tagStats: Record<AdaptiveTag, TagStat>;
+  questionHistory: QuestionAttempt[];
+  misconceptions: MisconceptionFlag[];
+  recommendations: RecommendationState | null;
 }
 
 const initialProgress: ProgressData = {
@@ -80,13 +102,18 @@ const initialProgress: ProgressData = {
   // v3 - Planetarium
   planetariumVisits: [],
   planetariumTotalSeconds: 0,
+  // v4 - Adaptive Learning
+  tagStats: initializeTagStats(),
+  questionHistory: [],
+  misconceptions: [],
+  recommendations: null,
 };
 
 /**
  * Migrate old progress data to new version
  */
 function migrateProgress(data: Partial<ProgressData>): ProgressData {
-  const _version = data.version || 1;  // For future migrations
+  const version = data.version || 1;
 
   // Base structure from v1
   const migrated: ProgressData = {
@@ -105,10 +132,19 @@ function migrateProgress(data: Partial<ProgressData>): ProgressData {
     // New v3 fields - Planetarium
     planetariumVisits: data.planetariumVisits || [],
     planetariumTotalSeconds: data.planetariumTotalSeconds || 0,
+    // New v4 fields - Adaptive Learning
+    tagStats: data.tagStats
+      ? ensureAllTagsExist(data.tagStats)
+      : initializeTagStats(),
+    questionHistory: data.questionHistory || [],
+    misconceptions: data.misconceptions || [],
+    recommendations: data.recommendations || null,
   };
 
-  // Future migrations can be added here
-  // if (version < 4) { ... }
+  // v4 specific migration: ensure all tags exist
+  if (version < 4 && data.tagStats) {
+    migrated.tagStats = ensureAllTagsExist(data.tagStats);
+  }
 
   return migrated;
 }
@@ -417,6 +453,153 @@ export function useProgress() {
     [progress.planetariumVisits]
   );
 
+  // ============================================================================
+  // ADAPTIVE LEARNING METHODS (v4)
+  // ============================================================================
+
+  /**
+   * Update mastery after answering a question
+   * This is the main entry point for adaptive learning updates
+   */
+  const updateMastery = useCallback(
+    (params: MasteryUpdateParams) => {
+      recordActivity();
+      setProgress((prev) => {
+        const currentTagStats = prev.tagStats ?? initializeTagStats();
+        const currentHistory = prev.questionHistory ?? [];
+        const currentMisconceptions = prev.misconceptions ?? [];
+
+        // Process mastery update
+        const result = processMasteryUpdate(currentTagStats, params);
+
+        // Add new attempt to history
+        const newHistory = [...currentHistory, result.newAttempt];
+
+        // Evaluate misconception rules
+        const newMisconceptions = evaluateMisconceptionRules(
+          newHistory,
+          currentMisconceptions
+        );
+
+        // Merge misconceptions
+        const allMisconceptions = [...currentMisconceptions, ...newMisconceptions];
+
+        // Build updated tagStats
+        const updatedTagStats = { ...currentTagStats };
+        for (const update of result.updatedTags) {
+          const stat = currentTagStats[update.tag];
+          if (stat) {
+            updatedTagStats[update.tag] = {
+              ...stat,
+              mastery: update.newMastery,
+              seen: stat.seen + 1,
+              correct: params.isCorrect ? stat.correct + 1 : stat.correct,
+              wrong: params.isCorrect ? stat.wrong : stat.wrong + 1,
+              lastSeenAt: new Date().toISOString(),
+            };
+          }
+        }
+
+        // Invalidate recommendations cache
+        return {
+          ...prev,
+          tagStats: updatedTagStats,
+          questionHistory: newHistory,
+          misconceptions: allMisconceptions,
+          recommendations: null, // Will be regenerated on demand
+        };
+      });
+    },
+    [setProgress, recordActivity]
+  );
+
+  /**
+   * Resolve a misconception (mark as fixed)
+   */
+  const resolveMisconception = useCallback(
+    (ruleId: string) => {
+      setProgress((prev) => {
+        const updatedMisconceptions = resolveMisconceptionFn(
+          prev.misconceptions ?? [],
+          ruleId
+        );
+        return {
+          ...prev,
+          misconceptions: updatedMisconceptions,
+        };
+      });
+    },
+    [setProgress]
+  );
+
+  /**
+   * Regenerate recommendations
+   */
+  const refreshRecommendations = useCallback(
+    (lessons: LessonWithTags[], quizzes: QuizWithTags[]) => {
+      setProgress((prev) => {
+        const newRecommendations = generateRecommendations({
+          lessons,
+          quizzes,
+          lessonsProgress: prev.lessonsProgress,
+          tagStats: prev.tagStats ?? initializeTagStats(),
+          questionHistory: prev.questionHistory ?? [],
+          misconceptions: prev.misconceptions ?? [],
+        });
+
+        return {
+          ...prev,
+          recommendations: newRecommendations,
+        };
+      });
+    },
+    [setProgress]
+  );
+
+  /**
+   * Compute recommendations (pure function, no side effects)
+   * Use this in useMemo to avoid infinite loops
+   */
+  const computeRecommendationsData = useMemo(() => {
+    const currentRecs = progress.recommendations;
+
+    // Check if cache is valid
+    if (currentRecs && isRecommendationsCacheValid(currentRecs)) {
+      return currentRecs;
+    }
+
+    // Return null to indicate recommendations need to be generated
+    return null;
+  }, [progress.recommendations]);
+
+  /**
+   * Get or generate recommendations (with caching)
+   * WARNING: This function updates state - don't call it during render!
+   */
+  const getRecommendations = useCallback(
+    (lessons: LessonWithTags[], quizzes: QuizWithTags[]): RecommendationState => {
+      const currentRecs = progress.recommendations;
+
+      // Check if cache is valid
+      if (currentRecs && isRecommendationsCacheValid(currentRecs)) {
+        return currentRecs;
+      }
+
+      // Generate new recommendations
+      const newRecommendations = generateRecommendations({
+        lessons,
+        quizzes,
+        lessonsProgress: progress.lessonsProgress,
+        tagStats: progress.tagStats ?? initializeTagStats(),
+        questionHistory: progress.questionHistory ?? [],
+        misconceptions: progress.misconceptions ?? [],
+      });
+
+      return newRecommendations;
+    },
+    [progress]
+  );
+
   // Computed stats
   const stats = useMemo(() => {
     const completedLessons = Object.values(progress.lessonsProgress).filter(
@@ -457,6 +640,9 @@ export function useProgress() {
       // Planetarium stats (v3)
       planetsVisited: progress.planetariumVisits?.length ?? 0,
       planetariumTotalMinutes: Math.round((progress.planetariumTotalSeconds ?? 0) / 60),
+      // Adaptive stats (v4)
+      questionsAnswered: progress.questionHistory?.length ?? 0,
+      activeMisconceptions: (progress.misconceptions ?? []).filter((m) => !m.resolved).length,
     };
   }, [progress]);
 
@@ -469,7 +655,7 @@ export function useProgress() {
     isBookmarked,
     getLessonProgress,
     recordActivity,
-    // New methods
+    // Mars/Labs/Asteroids methods
     addMarsExploration,
     completeLab: completeLabCallback,
     addAsteroidAnalysis,
@@ -483,5 +669,10 @@ export function useProgress() {
     visitPlanet,
     isPlanetVisited,
     getPlanetVisit,
+    // Adaptive Learning methods (v4)
+    updateMastery,
+    resolveMisconception,
+    refreshRecommendations,
+    getRecommendations,
   };
 }

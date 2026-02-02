@@ -1,5 +1,6 @@
 import { LESSON_CATEGORIES, DIFFICULTY_LEVELS } from '@/lib/constants';
 import type { Question } from '@/features/quiz-engine';
+import { ADAPTIVE_TAGS, type AdaptiveTag } from '@/features/adaptive';
 
 // Content block types
 export type ContentBlockType = 'text' | 'image' | 'callout' | 'list';
@@ -23,6 +24,8 @@ export interface Lesson {
   imageUrl: string;
   contentBlocks: ContentBlock[];
   quiz: Question[];
+  // Adaptive learning (v4)
+  tags?: AdaptiveTag[];
 }
 
 export const lessons: Lesson[] = [
@@ -35,6 +38,7 @@ export const lessons: Lesson[] = [
     level: DIFFICULTY_LEVELS.BEGINNER,
     duration: 5,
     imageUrl: 'https://images-assets.nasa.gov/image/PIA17046/PIA17046~medium.jpg',
+    tags: [ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS, ADAPTIVE_TAGS.PLANETS, ADAPTIVE_TAGS.ORBITS],
     contentBlocks: [
       {
         type: 'text',
@@ -76,7 +80,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: '9', isCorrect: false },
           { id: 'd', text: '10', isCorrect: false }
         ],
-        explanation: 'W Układzie Słonecznym jest 8 planet. Pluton został w 2006 roku przeklasyfikowany do kategorii planet karłowatych.'
+        explanation: 'W Układzie Słonecznym jest 8 planet. Pluton został w 2006 roku przeklasyfikowany do kategorii planet karłowatych.',
+        tags: [ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS, ADAPTIVE_TAGS.PLANETS],
+        difficultyLevel: 1,
       },
       {
         id: 'ss-intro-2',
@@ -87,7 +93,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Merkury', isCorrect: true },
           { id: 'd', text: 'Ziemia', isCorrect: false }
         ],
-        explanation: 'Merkury to najbliższa Słońcu planeta. Jego odległość od Słońca wynosi średnio 58 milionów km.'
+        explanation: 'Merkury to najbliższa Słońcu planeta. Jego odległość od Słońca wynosi średnio 58 milionów km.',
+        tags: [ADAPTIVE_TAGS.PLANETS, ADAPTIVE_TAGS.ORBITS],
+        difficultyLevel: 1,
       },
       {
         id: 'ss-intro-3',
@@ -98,7 +106,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Około 10 miliardów lat', isCorrect: false },
           { id: 'd', text: 'Około 100 milionów lat', isCorrect: false }
         ],
-        explanation: 'Układ Słoneczny powstał około 4,6 miliarda lat temu z obłoku gazu i pyłu (mgławicy słonecznej).'
+        explanation: 'Układ Słoneczny powstał około 4,6 miliarda lat temu z obłoku gazu i pyłu (mgławicy słonecznej).',
+        tags: [ADAPTIVE_TAGS.SOLAR_SYSTEM_BASICS, ADAPTIVE_TAGS.SCALES_DISTANCES],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -112,6 +122,7 @@ export const lessons: Lesson[] = [
     level: DIFFICULTY_LEVELS.INTERMEDIATE,
     duration: 7,
     imageUrl: 'https://images-assets.nasa.gov/image/PIA17563/PIA17563~medium.jpg',
+    tags: [ADAPTIVE_TAGS.STARS_BASICS, ADAPTIVE_TAGS.STELLAR_EVOLUTION, ADAPTIVE_TAGS.STAR_TYPES],
     contentBlocks: [
       {
         type: 'text',
@@ -157,7 +168,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Na powierzchni innych gwiazd', isCorrect: false },
           { id: 'd', text: 'W galaktycznych jądrach', isCorrect: false }
         ],
-        explanation: 'Gwiazdy rodzą się w mgławicach – obłokach gazu i pyłu, które kurczą się pod wpływem grawitacji.'
+        explanation: 'Gwiazdy rodzą się w mgławicach – obłokach gazu i pyłu, które kurczą się pod wpływem grawitacji.',
+        tags: [ADAPTIVE_TAGS.STARS_BASICS, ADAPTIVE_TAGS.STELLAR_EVOLUTION],
+        difficultyLevel: 1,
       },
       {
         id: 'stars-2',
@@ -168,7 +181,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Stanie się białym karłem', isCorrect: true },
           { id: 'd', text: 'Zniknie całkowicie', isCorrect: false }
         ],
-        explanation: 'Słońce jest za mało masywne, by eksplodować jako supernowa. Po fazie czerwonego olbrzyma stanie się białym karłem.'
+        explanation: 'Słońce jest za mało masywne, by eksplodować jako supernowa. Po fazie czerwonego olbrzyma stanie się białym karłem.',
+        tags: [ADAPTIVE_TAGS.STELLAR_EVOLUTION, ADAPTIVE_TAGS.STAR_TYPES],
+        difficultyLevel: 2,
       },
       {
         id: 'stars-3',
@@ -179,7 +194,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Około 10 milionów stopni', isCorrect: true },
           { id: 'd', text: 'Około 1 miliard stopni', isCorrect: false }
         ],
-        explanation: 'Do rozpoczęcia fuzji wodoru w hel potrzebna jest temperatura około 10 milionów stopni Celsjusza.'
+        explanation: 'Do rozpoczęcia fuzji wodoru w hel potrzebna jest temperatura około 10 milionów stopni Celsjusza.',
+        tags: [ADAPTIVE_TAGS.STARS_BASICS],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -193,6 +210,7 @@ export const lessons: Lesson[] = [
     level: DIFFICULTY_LEVELS.INTERMEDIATE,
     duration: 6,
     imageUrl: 'https://images-assets.nasa.gov/image/PIA04921/PIA04921~medium.jpg',
+    tags: [ADAPTIVE_TAGS.GALAXIES, ADAPTIVE_TAGS.BLACK_HOLES, ADAPTIVE_TAGS.SCALES_DISTANCES],
     contentBlocks: [
       {
         type: 'text',
@@ -233,7 +251,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Nieregularna', isCorrect: false },
           { id: 'd', text: 'Soczewkowata', isCorrect: false }
         ],
-        explanation: 'Droga Mleczna jest galaktyką spiralną z poprzeczką (SBbc). Ma wyraźne ramiona spiralne i centralną poprzeczkę.'
+        explanation: 'Droga Mleczna jest galaktyką spiralną z poprzeczką (SBbc). Ma wyraźne ramiona spiralne i centralną poprzeczkę.',
+        tags: [ADAPTIVE_TAGS.GALAXIES],
+        difficultyLevel: 1,
       },
       {
         id: 'gal-2',
@@ -244,7 +264,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Pustka', isCorrect: false },
           { id: 'd', text: 'Inna mała galaktyka', isCorrect: false }
         ],
-        explanation: 'W centrum Drogi Mlecznej znajduje się supermasywna czarna dziura Sagittarius A* o masie około 4 milionów mas Słońca.'
+        explanation: 'W centrum Drogi Mlecznej znajduje się supermasywna czarna dziura Sagittarius A* o masie około 4 milionów mas Słońca.',
+        tags: [ADAPTIVE_TAGS.GALAXIES, ADAPTIVE_TAGS.BLACK_HOLES],
+        difficultyLevel: 2,
       },
       {
         id: 'gal-3',
@@ -255,7 +277,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Co najmniej 200 miliardów', isCorrect: true },
           { id: 'd', text: 'Dokładnie 8', isCorrect: false }
         ],
-        explanation: 'Szacuje się, że w obserwowalnym Wszechświecie istnieje co najmniej 200 miliardów galaktyk, a niektóre szacunki mówią nawet o 2 bilionach.'
+        explanation: 'Szacuje się, że w obserwowalnym Wszechświecie istnieje co najmniej 200 miliardów galaktyk, a niektóre szacunki mówią nawet o 2 bilionach.',
+        tags: [ADAPTIVE_TAGS.GALAXIES, ADAPTIVE_TAGS.SCALES_DISTANCES],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -269,6 +293,7 @@ export const lessons: Lesson[] = [
     level: DIFFICULTY_LEVELS.BEGINNER,
     duration: 5,
     imageUrl: 'https://images-assets.nasa.gov/image/KSC-20200530-PH-SPX01_0006/KSC-20200530-PH-SPX01_0006~medium.jpg',
+    tags: [ADAPTIVE_TAGS.ROCKETS, ADAPTIVE_TAGS.PHYSICS_NEWTON, ADAPTIVE_TAGS.GRAVITY],
     contentBlocks: [
       {
         type: 'text',
@@ -309,7 +334,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Trzecia zasada dynamiki Newtona', isCorrect: true },
           { id: 'd', text: 'Zasada zachowania energii', isCorrect: false }
         ],
-        explanation: 'Rakiety działają na zasadzie trzeciej zasady dynamiki Newtona: akcja = reakcja. Wyrzucane gazy pchają rakietę w przeciwnym kierunku.'
+        explanation: 'Rakiety działają na zasadzie trzeciej zasady dynamiki Newtona: akcja = reakcja. Wyrzucane gazy pchają rakietę w przeciwnym kierunku.',
+        tags: [ADAPTIVE_TAGS.ROCKETS, ADAPTIVE_TAGS.PHYSICS_NEWTON],
+        difficultyLevel: 1,
       },
       {
         id: 'rocket-2',
@@ -320,7 +347,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Około 100 km/s', isCorrect: false },
           { id: 'd', text: 'Około 1000 km/s', isCorrect: false }
         ],
-        explanation: 'Prędkość ucieczki z Ziemi wynosi około 11,2 km/s (ponad 40 000 km/h). To minimalna prędkość potrzebna do opuszczenia pola grawitacyjnego Ziemi.'
+        explanation: 'Prędkość ucieczki z Ziemi wynosi około 11,2 km/s (ponad 40 000 km/h). To minimalna prędkość potrzebna do opuszczenia pola grawitacyjnego Ziemi.',
+        tags: [ADAPTIVE_TAGS.GRAVITY, ADAPTIVE_TAGS.SCALES_DISTANCES],
+        difficultyLevel: 2,
       },
       {
         id: 'rocket-3',
@@ -331,7 +360,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Bo nie potrzebuje powietrza do wytworzenia ciągu', isCorrect: true },
           { id: 'd', text: 'Bo używa energii słonecznej', isCorrect: false }
         ],
-        explanation: 'Rakieta wytwarza ciąg poprzez wyrzucanie masy (spalin), nie potrzebując zewnętrznego medium (jak powietrze) do odpychania się.'
+        explanation: 'Rakieta wytwarza ciąg poprzez wyrzucanie masy (spalin), nie potrzebując zewnętrznego medium (jak powietrze) do odpychania się.',
+        tags: [ADAPTIVE_TAGS.ROCKETS, ADAPTIVE_TAGS.PHYSICS_NEWTON],
+        difficultyLevel: 2,
       }
     ]
   },
@@ -345,6 +376,7 @@ export const lessons: Lesson[] = [
     level: DIFFICULTY_LEVELS.INTERMEDIATE,
     duration: 6,
     imageUrl: 'https://images-assets.nasa.gov/image/PIA14094/PIA14094~medium.jpg',
+    tags: [ADAPTIVE_TAGS.TELESCOPES, ADAPTIVE_TAGS.LIGHT_SPECTRUM, ADAPTIVE_TAGS.SPACE_MISSIONS],
     contentBlocks: [
       {
         type: 'text',
@@ -385,7 +417,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Bo są bliżej gwiazd', isCorrect: false },
           { id: 'd', text: 'Bo używają lepszego szkła', isCorrect: false }
         ],
-        explanation: 'Teleskopy kosmiczne działają ponad atmosferą, która powoduje turbulencje i pochłania część promieniowania, zakłócając obserwacje.'
+        explanation: 'Teleskopy kosmiczne działają ponad atmosferą, która powoduje turbulencje i pochłania część promieniowania, zakłócając obserwacje.',
+        tags: [ADAPTIVE_TAGS.TELESCOPES, ADAPTIVE_TAGS.LIGHT_SPECTRUM],
+        difficultyLevel: 1,
       },
       {
         id: 'tel-2',
@@ -396,7 +430,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: '2000', isCorrect: false },
           { id: 'd', text: '2010', isCorrect: false }
         ],
-        explanation: 'Teleskop Hubble\'a został wystrzelony 24 kwietnia 1990 roku i działa do dziś, dostarczając niezwykłych obrazów kosmosu.'
+        explanation: 'Teleskop Hubble\'a został wystrzelony 24 kwietnia 1990 roku i działa do dziś, dostarczając niezwykłych obrazów kosmosu.',
+        tags: [ADAPTIVE_TAGS.TELESCOPES, ADAPTIVE_TAGS.SPACE_MISSIONS],
+        difficultyLevel: 2,
       },
       {
         id: 'tel-3',
@@ -407,7 +443,9 @@ export const lessons: Lesson[] = [
           { id: 'c', text: 'Podczerwień', isCorrect: true },
           { id: 'd', text: 'Fale radiowe', isCorrect: false }
         ],
-        explanation: 'JWST obserwuje głównie w podczerwieni, co pozwala mu widzieć przez obłoki pyłu i obserwować bardzo odległe, "przesunięte ku czerwieni" obiekty.'
+        explanation: 'JWST obserwuje głównie w podczerwieni, co pozwala mu widzieć przez obłoki pyłu i obserwować bardzo odległe, "przesunięte ku czerwieni" obiekty.',
+        tags: [ADAPTIVE_TAGS.TELESCOPES, ADAPTIVE_TAGS.LIGHT_SPECTRUM],
+        difficultyLevel: 2,
       }
     ]
   }

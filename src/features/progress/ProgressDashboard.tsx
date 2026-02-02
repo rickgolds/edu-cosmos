@@ -1,14 +1,50 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { BookOpen, Brain, Bookmark, Flame, Trophy, Clock, TrendingUp, Orbit, FlaskConical } from 'lucide-react';
 import { Card, CardTitle, Badge, Button, EmptyState } from '@/components/ui';
 import { useProgress, useIsMounted } from '@/hooks';
 import { getRelativeTime } from '@/lib/date-utils';
 import Link from 'next/link';
+import { lessons } from '@/data/lessons';
+import { quizzes } from '@/data/quizzes';
+import {
+  DailyMission,
+  generateRecommendations,
+  isRecommendationsCacheValid,
+  initializeTagStats,
+  type LessonWithTags,
+  type QuizWithTags,
+  type RecommendationState,
+} from '@/features/adaptive';
 
 export function ProgressDashboard() {
   const { stats, progress } = useProgress();
   const isMounted = useIsMounted();
+  const [recommendations, setRecommendations] = useState<RecommendationState | null>(null);
+
+  // Generate recommendations only once when mounted
+  useEffect(() => {
+    if (!isMounted) return;
+
+    // Check if cached recommendations are valid
+    const cached = progress.recommendations;
+    if (cached && isRecommendationsCacheValid(cached)) {
+      setRecommendations(cached);
+      return;
+    }
+
+    // Generate new recommendations
+    const newRecs = generateRecommendations({
+      lessons: lessons as LessonWithTags[],
+      quizzes: quizzes as QuizWithTags[],
+      lessonsProgress: progress.lessonsProgress,
+      tagStats: progress.tagStats ?? initializeTagStats(),
+      questionHistory: progress.questionHistory ?? [],
+      misconceptions: progress.misconceptions ?? [],
+    });
+    setRecommendations(newRecs);
+  }, [isMounted]); // Only run on mount, not when progress changes
 
   // Don't render on server to avoid hydration mismatch
   if (!isMounted) {
@@ -50,6 +86,9 @@ export function ProgressDashboard() {
           color="warning"
         />
       </div>
+
+      {/* Daily Mission (Adaptive Learning) */}
+      <DailyMission recommendations={recommendations} variant="compact" />
 
       {/* New modules stats */}
       <div className="grid grid-cols-2 gap-4">

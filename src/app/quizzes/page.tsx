@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Metadata } from 'next';
-import { Brain, Clock, Trophy, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Brain, Clock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { Card, CardTitle, Badge, Button } from '@/components/ui';
-import { QuizView } from '@/features/quiz-engine';
+import { QuizView, type AdaptiveQuizData } from '@/features/quiz-engine';
 import { useProgress } from '@/hooks';
 import { quizzes, getQuickQuizzes, getQuizzesByCategory } from '@/data/quizzes';
 import { CATEGORY_LABELS, LESSON_CATEGORIES } from '@/lib/constants';
@@ -12,12 +11,19 @@ import type { Quiz, QuizResult } from '@/features/quiz-engine';
 
 export default function QuizzesPage() {
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
-  const { saveQuizResult } = useProgress();
+  const { saveQuizResult, updateMastery } = useProgress();
 
   const quickQuizzes = getQuickQuizzes();
   const categories = Object.values(LESSON_CATEGORIES);
 
-  const handleQuizComplete = (result: QuizResult) => {
+  const handleQuizComplete = (result: QuizResult, adaptiveData?: AdaptiveQuizData) => {
+    // Update mastery for each question answered
+    if (adaptiveData?.masteryUpdates) {
+      for (const update of adaptiveData.masteryUpdates) {
+        updateMastery(update);
+      }
+    }
+
     saveQuizResult({
       quizId: result.quizId,
       score: result.score,
