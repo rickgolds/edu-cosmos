@@ -11,7 +11,6 @@ import { quizzes } from '@/data/quizzes';
 import {
   DailyMission,
   generateRecommendations,
-  isRecommendationsCacheValid,
   initializeTagStats,
   type LessonWithTags,
   type QuizWithTags,
@@ -23,18 +22,14 @@ export function ProgressDashboard() {
   const isMounted = useIsMounted();
   const [recommendations, setRecommendations] = useState<RecommendationState | null>(null);
 
-  // Generate recommendations only once when mounted
+  // Track question count to detect new quiz completions
+  const questionCount = progress.questionHistory?.length ?? 0;
+
+  // Generate recommendations when mounted or when new questions are answered
   useEffect(() => {
     if (!isMounted) return;
 
-    // Check if cached recommendations are valid
-    const cached = progress.recommendations;
-    if (cached && isRecommendationsCacheValid(cached)) {
-      setRecommendations(cached);
-      return;
-    }
-
-    // Generate new recommendations
+    // Generate new recommendations (always fresh for real-time updates)
     const newRecs = generateRecommendations({
       lessons: lessons as LessonWithTags[],
       quizzes: quizzes as QuizWithTags[],
@@ -44,7 +39,7 @@ export function ProgressDashboard() {
       misconceptions: progress.misconceptions ?? [],
     });
     setRecommendations(newRecs);
-  }, [isMounted]); // Only run on mount, not when progress changes
+  }, [isMounted, questionCount]); // Re-run when question count changes
 
   // Don't render on server to avoid hydration mismatch
   if (!isMounted) {

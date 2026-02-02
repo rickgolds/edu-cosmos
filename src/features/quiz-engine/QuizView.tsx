@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Card, Button, Badge } from '@/components/ui';
 import { CheckCircle, XCircle, ArrowRight, RotateCcw, Trophy, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -24,6 +25,24 @@ export function QuizView({ quiz, onComplete, onRestart }: QuizViewProps) {
     actions,
   } = useQuiz(quiz);
 
+  // Track if onComplete has been called to avoid double-calling
+  const hasCalledComplete = useRef(false);
+
+  // Call onComplete when quiz is complete and result is ready
+  useEffect(() => {
+    if (state.isComplete && result && adaptiveData && onComplete && !hasCalledComplete.current) {
+      hasCalledComplete.current = true;
+      onComplete(result, adaptiveData);
+    }
+  }, [state.isComplete, result, adaptiveData, onComplete]);
+
+  // Reset the ref when quiz restarts
+  useEffect(() => {
+    if (!state.isComplete) {
+      hasCalledComplete.current = false;
+    }
+  }, [state.isComplete]);
+
   // Handle answer selection
   const handleAnswerSelect = (answerId: string) => {
     if (!state.showFeedback && currentQuestion) {
@@ -39,10 +58,7 @@ export function QuizView({ quiz, onComplete, onRestart }: QuizViewProps) {
   // Handle next / complete
   const handleNext = () => {
     if (isLastQuestion && state.showFeedback) {
-      actions.nextQuestion();
-      if (result && onComplete) {
-        onComplete(result, adaptiveData ?? undefined);
-      }
+      actions.nextQuestion(); // This will set isComplete=true, triggering the useEffect above
     } else {
       actions.nextQuestion();
     }

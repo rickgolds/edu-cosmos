@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
  * Hook for persisting state in localStorage with SSR support
@@ -13,12 +13,22 @@ export function useLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(initialValue);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // Ref to always have the latest value (fixes stale closure issue)
+  const storedValueRef = useRef<T>(storedValue);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    storedValueRef.current = storedValue;
+  }, [storedValue]);
+
   // Hydrate from localStorage after mount
   useEffect(() => {
     try {
       const item = window.localStorage.getItem(key);
       if (item) {
-        setStoredValue(JSON.parse(item));
+        const parsed = JSON.parse(item);
+        setStoredValue(parsed);
+        storedValueRef.current = parsed;
       }
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
@@ -30,9 +40,10 @@ export function useLocalStorage<T>(
   const setValue = useCallback(
     (value: T | ((prev: T) => T)) => {
       try {
-        // Allow value to be a function
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
+        // Allow value to be a function - use ref for latest value to avoid stale closures
+        const valueToStore = value instanceof Function ? value(storedValueRef.current) : value;
         setStoredValue(valueToStore);
+        storedValueRef.current = valueToStore; // Update ref immediately for next call in same loop
 
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
@@ -41,7 +52,7 @@ export function useLocalStorage<T>(
         console.error(`Error setting localStorage key "${key}":`, error);
       }
     },
-    [key, storedValue]
+    [key]
   );
 
   // Clear the value

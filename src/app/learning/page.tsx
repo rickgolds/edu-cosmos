@@ -18,7 +18,6 @@ import {
   computeReviewQueue,
   getProgressSummary,
   generateRecommendations,
-  isRecommendationsCacheValid,
   TAG_LABELS,
   type LessonWithTags,
   type QuizWithTags,
@@ -34,18 +33,14 @@ export default function LearningPage() {
   const isMounted = useIsMounted();
   const [recommendations, setRecommendations] = useState<RecommendationState | null>(null);
 
-  // Generate recommendations only once when mounted
+  // Track question count to detect new quiz completions
+  const questionCount = progress.questionHistory?.length ?? 0;
+
+  // Generate recommendations when mounted or when new questions are answered
   useEffect(() => {
     if (!isMounted) return;
 
-    // Check if cached recommendations are valid
-    const cached = progress.recommendations;
-    if (cached && isRecommendationsCacheValid(cached)) {
-      setRecommendations(cached);
-      return;
-    }
-
-    // Generate new recommendations
+    // Generate new recommendations (always fresh, don't use cache for real-time updates)
     const newRecs = generateRecommendations({
       lessons: lessons as LessonWithTags[],
       quizzes: quizzes as QuizWithTags[],
@@ -55,7 +50,7 @@ export default function LearningPage() {
       misconceptions: progress.misconceptions ?? [],
     });
     setRecommendations(newRecs);
-  }, [isMounted]); // Only run on mount, not when progress changes
+  }, [isMounted, questionCount]); // Re-run when question count changes
 
   // Get progress summary
   const summary = useMemo(() => {

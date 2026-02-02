@@ -484,20 +484,20 @@ export function useProgress() {
         // Merge misconceptions
         const allMisconceptions = [...currentMisconceptions, ...newMisconceptions];
 
-        // Build updated tagStats
-        const updatedTagStats = { ...currentTagStats };
+        // Build updated tagStats - ensure all tags exist
+        const updatedTagStats = ensureAllTagsExist(currentTagStats);
         for (const update of result.updatedTags) {
-          const stat = currentTagStats[update.tag];
-          if (stat) {
-            updatedTagStats[update.tag] = {
-              ...stat,
-              mastery: update.newMastery,
-              seen: stat.seen + 1,
-              correct: params.isCorrect ? stat.correct + 1 : stat.correct,
-              wrong: params.isCorrect ? stat.wrong : stat.wrong + 1,
-              lastSeenAt: new Date().toISOString(),
-            };
-          }
+          const stat = updatedTagStats[update.tag as AdaptiveTag];
+          // Always update, creating stat if needed
+          updatedTagStats[update.tag as AdaptiveTag] = {
+            tag: update.tag as AdaptiveTag,
+            mastery: update.newMastery,
+            seen: (stat?.seen ?? 0) + 1,
+            correct: params.isCorrect ? (stat?.correct ?? 0) + 1 : (stat?.correct ?? 0),
+            wrong: params.isCorrect ? (stat?.wrong ?? 0) : (stat?.wrong ?? 0) + 1,
+            lastSeenAt: new Date().toISOString(),
+            nextReviewAt: stat?.nextReviewAt ?? null,
+          };
         }
 
         // Invalidate recommendations cache

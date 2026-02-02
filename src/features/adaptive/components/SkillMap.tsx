@@ -138,14 +138,11 @@ export function WeakAreasCard({
   maxItems = 3,
   className,
 }: WeakAreasCardProps) {
-  const weakTags = Object.values(tagStats)
-    .filter((stat) => stat.seen > 0 && stat.mastery < 0.6)
+  const allTagsWithData = Object.values(tagStats).filter((stat) => stat.seen > 0);
+  const weakTags = allTagsWithData
+    .filter((stat) => stat.mastery < 0.6)
     .sort((a, b) => a.mastery - b.mastery)
     .slice(0, maxItems);
-
-  if (weakTags.length === 0) {
-    return null;
-  }
 
   return (
     <Card variant="default" className={className}>
@@ -156,25 +153,44 @@ export function WeakAreasCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {weakTags.map((stat) => {
-            const label = TAG_LABELS[stat.tag] || stat.tag;
-            return (
-              <div key={stat.tag}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-300">{label}</span>
-                  <span className="text-xs text-yellow-400">
-                    {Math.round(stat.mastery * 100)}%
-                  </span>
-                </div>
-                <MasteryBar mastery={stat.mastery} showPercentage={false} size="sm" />
-              </div>
-            );
-          })}
-        </div>
-        <p className="mt-3 text-xs text-gray-500">
-          Te tematy wymagają dodatkowej uwagi. Skorzystaj z rekomendacji!
-        </p>
+        {weakTags.length === 0 ? (
+          <div className="text-center py-4">
+            {allTagsWithData.length === 0 ? (
+              <p className="text-sm text-gray-500">
+                Rozwiąż quizy, aby zobaczyć obszary do poprawy.
+              </p>
+            ) : (
+              <>
+                <span className="text-2xl">🎉</span>
+                <p className="text-sm text-green-400 mt-2">
+                  Świetnie! Wszystkie tematy opanowane powyżej 60%.
+                </p>
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="space-y-3">
+              {weakTags.map((stat) => {
+                const label = TAG_LABELS[stat.tag] || stat.tag;
+                return (
+                  <div key={stat.tag}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm text-gray-300">{label}</span>
+                      <span className="text-xs text-yellow-400">
+                        {Math.round(stat.mastery * 100)}%
+                      </span>
+                    </div>
+                    <MasteryBar mastery={stat.mastery} showPercentage={false} size="sm" />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Te tematy wymagają dodatkowej uwagi. Skorzystaj z rekomendacji!
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );

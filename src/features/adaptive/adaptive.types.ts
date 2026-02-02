@@ -166,12 +166,12 @@ export interface AdaptiveEngineConfig {
  * Domyślna konfiguracja
  */
 export const DEFAULT_ADAPTIVE_CONFIG: AdaptiveEngineConfig = {
-  baseCorrectDelta: 0.06,
-  baseWrongDelta: -0.08,
+  baseCorrectDelta: 0.15,
+  baseWrongDelta: -0.12,
   difficultyMultipliers: {
-    1: 0.8,
+    1: 0.9,
     2: 1.0,
-    3: 1.2,
+    3: 1.15,
   },
   reviewIntervalWrong: 1,
   reviewIntervalLowMastery: 3,
