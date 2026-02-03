@@ -18,6 +18,7 @@ Aplikacja jest dostępna pod adresem: [edu-cosmos.vercel.app](https://edu-cosmos
 - **Quizy** - Interaktywne testy wiedzy z wyjaśnieniami odpowiedzi
 - **Biblioteka NASA** - Wyszukiwarka milionów zdjęć i filmów z archiwum NASA
 - **Śledzenie postępów** - Panel statystyk, osiągnięć i historii aktywności (localStorage)
+- **Adaptacyjna nauka** - Spersonalizowane rekomendacje, mapa umiejętności, system powtórek (spaced repetition) i diagnostyka błędnych przekonań
 - **Asteroid Watch** - Śledzenie asteroid zbliżających się do Ziemi
 
 ## Stack technologiczny
@@ -83,6 +84,7 @@ src/
 │   │   ├── [planet]/         # Dynamiczne strony planet
 │   │   └── credits/          # Źródła i podziękowania
 │   ├── asteroid-watch/        # Śledzenie asteroid
+│   ├── learning/              # Adaptacyjna nauka
 │   └── about/                 # O aplikacji
 ├── components/ui/              # Reusable UI components (design system)
 ├── features/                   # Feature modules (logika domenowa)
@@ -91,6 +93,7 @@ src/
 │   ├── quiz-engine/           # Silnik quizów
 │   ├── library/               # NASA Library feature
 │   ├── progress/              # Progress tracking
+│   ├── adaptive/              # Adaptacyjna nauka (rekomendacje, spaced repetition, diagnostyka)
 │   └── planetarium/           # 3D Planetarium feature
 │       ├── components/        # Komponenty 3D (PlanetMesh, HUD, etc.)
 │       ├── scenes/            # Sceny Three.js
