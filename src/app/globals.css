@@ -93,6 +93,195 @@
   .animation-delay-500 { animation-delay: 500ms; }
 }
 
+/* ===========================================
+   COSMIC BACKGROUND — nebulas & shooting stars
+   =========================================== */
+
+/* Nebula orbs — shared base */
+.cosmic-nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform, opacity;
+}
+
+.cosmic-nebula-1 {
+  width: 600px;
+  height: 600px;
+  top: -5%;
+  left: -5%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.12) 0%, transparent 70%);
+  animation: nebula-drift-1 35s ease-in-out infinite;
+}
+
+.cosmic-nebula-2 {
+  width: 500px;
+  height: 500px;
+  top: 30%;
+  right: -8%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+  animation: nebula-drift-2 40s ease-in-out infinite;
+}
+
+.cosmic-nebula-3 {
+  width: 450px;
+  height: 450px;
+  bottom: 10%;
+  left: 15%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.07) 0%, transparent 70%);
+  animation: nebula-drift-3 30s ease-in-out infinite;
+}
+
+.cosmic-nebula-4 {
+  width: 350px;
+  height: 350px;
+  top: 60%;
+  left: 55%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  animation: nebula-drift-1 45s ease-in-out infinite reverse;
+}
+
+.cosmic-nebula-5 {
+  width: 700px;
+  height: 700px;
+  top: 10%;
+  left: 40%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.04) 0%, rgba(168, 85, 247, 0.03) 50%, transparent 70%);
+  animation: nebula-drift-2 50s ease-in-out infinite;
+}
+
+.cosmic-nebula-6 {
+  width: 400px;
+  height: 400px;
+  bottom: -5%;
+  right: 20%;
+  background: radial-gradient(circle, rgba(0, 255, 200, 0.05) 0%, transparent 70%);
+  animation: nebula-drift-3 38s ease-in-out infinite reverse;
+}
+
+@keyframes nebula-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  25% { transform: translate(30px, -20px) scale(1.05); opacity: 0.8; }
+  50% { transform: translate(-15px, 25px) scale(0.95); opacity: 1; }
+  75% { transform: translate(20px, 10px) scale(1.08); opacity: 0.7; }
+}
+
+@keyframes nebula-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  33% { transform: translate(-40px, 15px) scale(1.1); opacity: 0.75; }
+  66% { transform: translate(25px, -30px) scale(0.92); opacity: 1; }
+}
+
+@keyframes nebula-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  20% { transform: translate(20px, 30px) scale(1.06); opacity: 0.85; }
+  50% { transform: translate(-35px, -10px) scale(0.94); opacity: 1; }
+  80% { transform: translate(10px, -25px) scale(1.03); opacity: 0.9; }
+}
+
+/* Shooting stars */
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(200,230,255,0.7) 40%, rgba(0,212,255,0.9) 100%);
+  border-radius: 999px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.shooting-star::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 8px 2px rgba(200,230,255,0.8);
+}
+
+.shooting-star-1 {
+  top: 8%;
+  left: 10%;
+  width: 120px;
+  animation: shoot-1 6s 1s ease-in infinite;
+}
+
+.shooting-star-2 {
+  top: 25%;
+  right: 15%;
+  width: 90px;
+  animation: shoot-2 8s 4s ease-in infinite;
+}
+
+.shooting-star-3 {
+  top: 55%;
+  left: 30%;
+  width: 100px;
+  animation: shoot-3 7s 7s ease-in infinite;
+}
+
+.shooting-star-4 {
+  top: 15%;
+  left: 55%;
+  width: 80px;
+  animation: shoot-1 9s 2.5s ease-in infinite;
+}
+
+.shooting-star-5 {
+  top: 42%;
+  left: 5%;
+  width: 110px;
+  animation: shoot-2 5s 0s ease-in infinite;
+}
+
+.shooting-star-6 {
+  top: 70%;
+  right: 25%;
+  width: 95px;
+  animation: shoot-3 10s 5s ease-in infinite;
+}
+
+.shooting-star-7 {
+  top: 85%;
+  left: 45%;
+  width: 75px;
+  animation: shoot-1 7s 8s ease-in infinite;
+}
+
+.shooting-star-8 {
+  top: 35%;
+  left: 70%;
+  width: 105px;
+  animation: shoot-2 6s 3s ease-in infinite;
+}
+
+/* Three shoot variants with different angles */
+@keyframes shoot-1 {
+  0% { opacity: 0; transform: rotate(35deg) translateX(0); }
+  3% { opacity: 1; }
+  10% { opacity: 1; transform: rotate(35deg) translateX(400px); }
+  12% { opacity: 0; transform: rotate(35deg) translateX(450px); }
+  100% { opacity: 0; }
+}
+
+@keyframes shoot-2 {
+  0% { opacity: 0; transform: rotate(45deg) translateX(0); }
+  3% { opacity: 1; }
+  10% { opacity: 1; transform: rotate(45deg) translateX(350px); }
+  12% { opacity: 0; transform: rotate(45deg) translateX(400px); }
+  100% { opacity: 0; }
+}
+
+@keyframes shoot-3 {
+  0% { opacity: 0; transform: rotate(28deg) translateX(0); }
+  3% { opacity: 1; }
+  10% { opacity: 1; transform: rotate(28deg) translateX(380px); }
+  12% { opacity: 0; transform: rotate(28deg) translateX(430px); }
+  100% { opacity: 0; }
+}
+
 /* Highlighted nav button for Planetarium */
 .nav-planetarium-btn {
   animation: nav-glow-pulse 3s ease-in-out infinite;
@@ -105,6 +294,44 @@
   50% {
     box-shadow: 0 0 14px rgba(0, 212, 255, 0.3);
   }
+}
+
+/* ===========================================
+   PLANET CAROUSEL STYLES
+   =========================================== */
+
+/* Scroll snap for planet carousel */
+.planet-carousel {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.planet-carousel > * {
+  scroll-snap-align: start;
+}
+
+.planet-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.planet-carousel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.planet-carousel::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+.planet-carousel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Edge fade mask for carousel */
+.carousel-fade-edges {
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
 }
 
 /* ===========================================

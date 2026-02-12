@@ -22,6 +22,9 @@ import {
   Cloud,
   GitBranch,
   Box,
+  FlaskConical,
+  Orbit,
+  Sparkles,
 } from 'lucide-react';
 import { Card, CardTitle, Badge } from '@/components/ui';
 
@@ -350,6 +353,21 @@ export default function AboutPage() {
             completed
           />
           <TaskItem
+            title="Adaptacyjna nauka"
+            description="System spersonalizowanych rekomendacji, mapa umiejętności, spaced repetition i diagnostyka błędnych przekonań"
+            completed
+          />
+          <TaskItem
+            title="Laboratoria i symulacje"
+            description="Interaktywne symulacje grawitacji i czasu podróży kosmicznej z konfigurowalnymi parametrami"
+            completed
+          />
+          <TaskItem
+            title="Animowane tło i strona główna"
+            description="Canvas starfield z migoczącymi gwiazdami i kometami, dynamiczna strona główna z sekcjami: APOD, asteroidy, quiz dnia, karuzela planet, liczniki"
+            completed
+          />
+          <TaskItem
             title="Optymalizacja wydajności"
             description="Lazy loading komponentów, optymalizacja dla urządzeń mobilnych, adaptacyjna jakość renderowania 3D"
             completed
@@ -382,12 +400,12 @@ export default function AboutPage() {
           <FeatureItem
             icon={<BookOpen className="w-5 h-5" />}
             title="Lekcje"
-            description="Mikro-moduły edukacyjne (5-7 min) z ilustracjami i quizem na końcu"
+            description="15 mikro-modułów edukacyjnych (5-7 min) z ilustracjami i quizem na końcu"
           />
           <FeatureItem
             icon={<Brain className="w-5 h-5" />}
-            title="Quizy"
-            description="Interaktywne testy wiedzy z wyjaśnieniami odpowiedzi i punktacją"
+            title="Quizy i Quiz dnia"
+            description="4 quizy tematyczne (32 pytania), codzienny quiz dnia z interaktywnym podglądem"
           />
           <FeatureItem
             icon={<Search className="w-5 h-5" />}
@@ -397,12 +415,32 @@ export default function AboutPage() {
           <FeatureItem
             icon={<BarChart3 className="w-5 h-5" />}
             title="Śledzenie postępów"
-            description="Panel statystyk, osiągnięć i historii aktywności użytkownika"
+            description="Panel statystyk, osiągnięć, serii dni i historii aktywności użytkownika"
+          />
+          <FeatureItem
+            icon={<Orbit className="w-5 h-5" />}
+            title="Asteroid Watch"
+            description="Śledzenie asteroid zbliżających się do Ziemi w czasie rzeczywistym (NeoWs API)"
+          />
+          <FeatureItem
+            icon={<FlaskConical className="w-5 h-5" />}
+            title="Laboratoria"
+            description="Interaktywne symulacje grawitacji i czasu podróży kosmicznej"
+          />
+          <FeatureItem
+            icon={<BookOpen className="w-5 h-5" />}
+            title="Słowniczek pojęć"
+            description="62 pojęcia astronomiczne z kategoriami, powiązaniami i terminem dnia"
+          />
+          <FeatureItem
+            icon={<Sparkles className="w-5 h-5" />}
+            title="Adaptacyjna nauka"
+            description="Spersonalizowane rekomendacje, mapa umiejętności i system powtórek"
           />
           <FeatureItem
             icon={<Globe className="w-5 h-5" />}
-            title="Asteroid Watch"
-            description="Śledzenie asteroid zbliżających się do Ziemi (NeoWs API)"
+            title="Dynamiczna strona główna"
+            description="Sekcje: APOD + asteroidy, karuzela planet, quiz dnia, animowane liczniki, widget postępów"
           />
           <FeatureItem
             icon={<Smartphone className="w-5 h-5" />}
@@ -437,7 +475,7 @@ export default function AboutPage() {
           <TechItem
             icon={<Palette className="w-5 h-5" />}
             title="UI/UX"
-            items={['Custom Design System', 'Framer Motion', 'Lucide Icons', 'Responsive Design']}
+            items={['Custom Design System', 'Canvas API (starfield)', 'Lucide Icons', 'Responsive Design']}
           />
           <TechItem
             icon={<GitBranch className="w-5 h-5" />}
@@ -461,8 +499,10 @@ export default function AboutPage() {
         <div className="prose prose-invert max-w-none text-gray-300 space-y-4">
           <p>
             Aplikacja oparta jest na architekturze <strong>feature-based modularnej</strong>, gdzie
-            każda domena funkcjonalna (APOD, lekcje, quizy, biblioteka, planetarium, postęp) ma własny
-            folder z typami, serwisami i komponentami.
+            każda domena funkcjonalna (APOD, lekcje, quizy, biblioteka, planetarium, asteroidy,
+            laboratoria, słowniczek, adaptacyjna nauka, postęp) ma własny folder z typami, serwisami
+            i komponentami. Komponenty strony głównej wydzielone są do <code>components/home/</code>,
+            a współdzielony design system do <code>components/ui/</code>.
           </p>
           <div className="bg-cosmos-darker rounded-lg p-4 font-mono text-sm">
             <pre className="text-gray-400 overflow-x-auto">
@@ -470,16 +510,32 @@ export default function AboutPage() {
 ├── app/                    # Next.js App Router
 │   ├── planetarium/        # 3D Planetarium
 │   ├── apod/              # APOD module
-│   ├── lessons/           # Lessons module
-│   └── ...
-├── components/ui/          # Design System
+│   ├── lessons/           # Lekcje
+│   ├── quizzes/           # Quizy
+│   ├── glossary/          # Słowniczek pojęć
+│   ├── asteroid-watch/    # Asteroid Watch
+│   ├── labs/              # Laboratoria
+│   ├── library/           # Biblioteka NASA
+│   ├── progress/          # Dashboard postępu
+│   ├── learning/          # Adaptacyjna nauka
+│   └── about/             # O projekcie
+├── components/
+│   ├── ui/                # Design System (Button, Card, Badge, Navbar...)
+│   └── home/              # Strona główna (CosmicBackground, Quiz dnia, Karuzela...)
 ├── features/               # Feature modules
-│   ├── planetarium/       # 3D scenes, camera, state
-│   ├── apod/              # APOD service, types
-│   ├── quiz-engine/       # Reusable quiz logic
-│   └── ...
-├── hooks/                  # Custom React hooks
-└── data/                   # Static data (lessons, quizzes)`}
+│   ├── planetarium/       # 3D scenes, camera, state, data
+│   ├── apod/              # APOD service, types, components
+│   ├── asteroid-watch/    # NeoWs API, components
+│   ├── glossary/          # 62 pojęcia, wyszukiwarka
+│   ├── labs/              # Symulacje grawitacji i podróży
+│   ├── adaptive/          # Rekomendacje, spaced repetition
+│   ├── quiz-engine/       # Silnik quizów (reusable)
+│   ├── lessons/           # Karty lekcji
+│   ├── library/           # NASA Images search
+│   └── progress/          # Dashboard, statystyki
+├── hooks/                  # Custom hooks (useProgress, useLocalStorage)
+├── lib/                    # Utilities (date-utils, constants, fetcher)
+└── data/                   # 15 lekcji, 4 quizy (32 pytania)`}
             </pre>
           </div>
         </div>
@@ -530,9 +586,12 @@ export default function AboutPage() {
             <li>Frameworka Next.js 14 z App Router i React Server Components</li>
             <li>TypeScript dla zapewnienia type safety i jakości kodu</li>
             <li>Three.js i React Three Fiber dla interaktywnych wizualizacji 3D</li>
-            <li>Integracji z zewnętrznymi API NASA</li>
+            <li>Canvas API dla animowanego kosmicznego tła z gwiazdami i kometami</li>
+            <li>Integracji z zewnętrznymi API NASA (APOD, NeoWs, Images)</li>
+            <li>Adaptacyjnej nauki z systemem rekomendacji i spaced repetition</li>
+            <li>Interaktywnych laboratoriów z symulacjami fizycznymi</li>
             <li>Technik optymalizacji wydajności dla urządzeń mobilnych</li>
-            <li>Architektury modularnej ułatwiającej rozwój i utrzymanie aplikacji</li>
+            <li>Architektury modularnej (12 feature modules) ułatwiającej rozwój i utrzymanie</li>
           </ul>
           <p>
             Aplikacja jest dostępna publicznie pod adresem{' '}

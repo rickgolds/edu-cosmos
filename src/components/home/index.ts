@@ -1,0 +1,9 @@
+export { ParallaxStars } from './ParallaxStars';
+export { CosmicBackground } from './CosmicBackground';
+export { AsteroidTicker } from './AsteroidTicker';
+export { TermOfTheDay } from './TermOfTheDay';
+export { CosmosToday } from './CosmosToday';
+export { StatsCounters } from './StatsCounters';
+export { PlanetCarousel } from './PlanetCarousel';
+export { HomeQuiz } from './HomeQuiz';
+export { ProgressWidget } from './ProgressWidget';

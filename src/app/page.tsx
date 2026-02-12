@@ -1,13 +1,39 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { Rocket, BookOpen, Brain, Search, ArrowRight, Sparkles, Orbit, FlaskConical } from 'lucide-react';
-import { Button, Card, CardTitle, Badge, SkeletonCard } from '@/components/ui';
+import { Button, Card, CardTitle, Badge } from '@/components/ui';
 import { fetchTodayApod } from '@/features/apod';
-import { ApodCard } from '@/features/apod';
+import { fetchNeoFeed } from '@/features/asteroid-watch';
 import { lessons } from '@/data/lessons';
 import { LessonCard } from '@/features/lessons';
+import { formatDateForApi } from '@/lib/date-utils';
+import {
+  CosmosToday,
+  StatsCounters,
+  PlanetCarousel,
+  HomeQuiz,
+  ProgressWidget,
+} from '@/components/home';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const today = formatDateForApi(new Date());
+
+  // Parallel server-side data fetching
+  const [apodResult, neoResult] = await Promise.allSettled([
+    fetchTodayApod(),
+    fetchNeoFeed({ startDate: today, endDate: today }),
+  ]);
+
+  const apod = apodResult.status === 'fulfilled' ? apodResult.value : null;
+
+  let neoData: { count: number; hazardousCount: number } | null = null;
+  if (neoResult.status === 'fulfilled') {
+    const neos = neoResult.value;
+    neoData = {
+      count: neos.length,
+      hazardousCount: neos.filter((n) => n.isPotentiallyHazardous).length,
+    };
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -41,11 +67,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Decorative elements */}
-        <div className="absolute top-1/2 left-10 w-2 h-2 bg-accent-cyan rounded-full animate-pulse-slow" />
-        <div className="absolute top-1/3 right-20 w-3 h-3 bg-accent-purple rounded-full animate-pulse-slow animation-delay-200" />
-        <div className="absolute bottom-1/4 left-1/4 w-2 h-2 bg-accent-pink rounded-full animate-pulse-slow animation-delay-500" />
       </section>
 
       {/* Features Section */}
@@ -111,30 +132,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* APOD Preview */}
-      <section className="py-16 border-t border-cosmos-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-display font-bold text-white mb-2">
-                Kosmos dziś
-              </h2>
-              <p className="text-gray-400">
-                Astronomiczne zdjęcie dnia od NASA
-              </p>
-            </div>
-            <Link href="/apod">
-              <Button variant="ghost" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Zobacz więcej
-              </Button>
-            </Link>
-          </div>
+      {/* "Co dziś w kosmosie" - APOD + Asteroids + Term */}
+      <CosmosToday apod={apod} neoData={neoData} />
 
-          <Suspense fallback={<SkeletonCard />}>
-            <TodayApod />
-          </Suspense>
-        </div>
-      </section>
+      {/* Animated Stats Counters */}
+      <StatsCounters />
+
+      {/* Planet Carousel → Planetarium */}
+      <PlanetCarousel />
+
+      {/* Quiz of the Day */}
+      <HomeQuiz />
 
       {/* Lessons Preview */}
       <section className="py-16 border-t border-cosmos-border">
@@ -163,22 +171,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 border-t border-cosmos-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-display font-bold text-white mb-4">
-            Gotowy na kosmiczną przygodę?
-          </h2>
-          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-            Śledź swój postęp, zdobywaj osiągnięcia i poznawaj fascynujące tajemnice Wszechświata.
-          </p>
-          <Link href="/progress">
-            <Button size="lg" variant="primary">
-              Sprawdź swój postęp
-            </Button>
-          </Link>
-        </div>
-      </section>
+      {/* Progress Widget / CTA */}
+      <ProgressWidget />
     </div>
   );
 }
@@ -219,27 +213,4 @@ function FeatureCard({ icon, title, description, href, color }: FeatureCardProps
       </Card>
     </Link>
   );
-}
-
-// Today's APOD component (server component)
-async function TodayApod() {
-  try {
-    const apod = await fetchTodayApod();
-    return (
-      <div className="max-w-2xl">
-        <ApodCard apod={apod} variant="full" />
-      </div>
-    );
-  } catch {
-    return (
-      <Card padding="lg" className="text-center">
-        <p className="text-gray-400">
-          Nie udało się załadować zdjęcia dnia. Spróbuj później.
-        </p>
-        <Link href="/apod" className="mt-4 inline-block">
-          <Button variant="secondary">Przejdź do archiwum</Button>
-        </Link>
-      </Card>
-    );
-  }
 }

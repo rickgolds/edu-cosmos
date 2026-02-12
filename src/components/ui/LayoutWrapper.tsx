@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { CosmicBackground } from '@/components/home';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -27,15 +28,10 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     );
   }
 
-  // Normal layout with Navbar and Footer
+  // Normal layout with Navbar, Footer, and cosmic background on every page
   return (
     <>
-      {/* Stars background overlay */}
-      <div className="fixed inset-0 stars-bg opacity-30 pointer-events-none z-0" />
-
-      {/* Gradient overlays */}
-      <div className="fixed top-0 left-1/4 w-96 h-96 bg-glow-purple opacity-20 blur-3xl pointer-events-none z-0" />
-      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-glow-cyan opacity-20 blur-3xl pointer-events-none z-0" />
+      <CosmicBackground />
 
       <Navbar />
 
