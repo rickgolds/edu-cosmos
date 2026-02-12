@@ -93,6 +93,20 @@
   .animation-delay-500 { animation-delay: 500ms; }
 }
 
+/* Highlighted nav button for Planetarium */
+.nav-planetarium-btn {
+  animation: nav-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes nav-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(0, 212, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(0, 212, 255, 0.3);
+  }
+}
+
 /* ===========================================
    PLANETARIUM MODULE STYLES
    =========================================== */
