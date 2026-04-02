@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Search, Filter, Image as ImageIcon, Video, Loader2, ArrowDownUp } from 'lucide-react';
 import { SearchInput, Button, Badge, Card, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { searchNasaLibrary, getSuggestedSearches } from './library.service';
+import { searchNasaLibrary, getSuggestedSearches, getAssetDetails } from './library.service';
 import { LibraryGrid } from './LibraryGrid';
 import type { LibraryItem, LibrarySearchResult, LibrarySortOrder } from './library.types';
 
@@ -201,6 +201,25 @@ export function LibrarySearch() {
 
 // Simple modal for item details
 function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () => void }) {
+  const [originalUrl, setOriginalUrl] = useState<string | null>(null);
+  const [loadingUrl, setLoadingUrl] = useState(false);
+
+  useEffect(() => {
+    setLoadingUrl(true);
+    getAssetDetails(item.id)
+      .then((urls) => {
+        if (item.mediaType === 'video') {
+          const mp4 = urls.find((u) => u.endsWith('.mp4') && u.includes('~orig'));
+          setOriginalUrl(mp4 || urls.find((u) => u.endsWith('.mp4')) || null);
+        } else {
+          const orig = urls.find((u) => u.includes('~orig'));
+          setOriginalUrl(orig || urls.find((u) => /\.(jpg|jpeg|png|tif|tiff)$/i.test(u)) || null);
+        }
+      })
+      .catch(() => setOriginalUrl(null))
+      .finally(() => setLoadingUrl(false));
+  }, [item.id, item.mediaType]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
@@ -216,7 +235,7 @@ function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () =>
           <div className="relative aspect-video bg-cosmos-dark">
             {item.mediaType === 'video' ? (
               <video
-                src={item.thumbnailUrl.replace('~thumb', '~orig').replace('.jpg', '.mp4')}
+                src={originalUrl || undefined}
                 controls
                 className="w-full h-full"
                 poster={item.thumbnailUrl}
@@ -272,13 +291,14 @@ function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () =>
             <Button variant="ghost" onClick={onClose}>
               Zamknij
             </Button>
-            {item.thumbnailUrl && (
+            {loadingUrl ? (
+              <Button variant="primary" disabled>
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                Ładowanie...
+              </Button>
+            ) : originalUrl ? (
               <a
-                href={
-                  item.mediaType === 'video'
-                    ? item.thumbnailUrl.replace('~thumb', '~orig').replace('.jpg', '.mp4')
-                    : item.thumbnailUrl.replace('~thumb', '~orig')
-                }
+                href={originalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -286,7 +306,7 @@ function LibraryItemModal({ item, onClose }: { item: LibraryItem; onClose: () =>
                   Otwórz oryginał
                 </Button>
               </a>
-            )}
+            ) : null}
           </div>
         </div>
       </Card>
