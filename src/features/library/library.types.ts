@@ -54,6 +54,9 @@ export interface LibraryItem {
   photographer?: string;
 }
 
+// Sort options
+export type LibrarySortOrder = 'relevance' | 'newest' | 'oldest';
+
 // Search params
 export interface LibrarySearchParams {
   query: string;

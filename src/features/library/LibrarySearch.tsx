@@ -1,18 +1,34 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Search, Filter, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
+import { Search, Filter, Image as ImageIcon, Video, Loader2, ArrowDownUp } from 'lucide-react';
 import { SearchInput, Button, Badge, Card, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { useDebounce } from '@/hooks';
 import { searchNasaLibrary, getSuggestedSearches } from './library.service';
 import { LibraryGrid } from './LibraryGrid';
-import type { LibraryItem, LibrarySearchResult } from './library.types';
+import type { LibraryItem, LibrarySearchResult, LibrarySortOrder } from './library.types';
 
 type MediaFilter = 'all' | 'image' | 'video';
+
+const SORT_LABELS: Record<LibrarySortOrder, string> = {
+  relevance: 'Trafność',
+  newest: 'Najnowsze',
+  oldest: 'Najstarsze',
+};
+
+function sortItems(items: LibraryItem[], order: LibrarySortOrder): LibraryItem[] {
+  if (order === 'relevance') return items;
+  return [...items].sort((a, b) => {
+    const dateA = new Date(a.dateCreated).getTime();
+    const dateB = new Date(b.dateCreated).getTime();
+    return order === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+}
 
 export function LibrarySearch() {
   const [query, setQuery] = useState('');
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>('all');
+  const [sortOrder, setSortOrder] = useState<LibrarySortOrder>('relevance');
   const [results, setResults] = useState<LibrarySearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +83,7 @@ export function LibrarySearch() {
               aria-label="Szukaj w bibliotece NASA"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant={mediaFilter === 'all' ? 'primary' : 'secondary'}
               size="sm"
@@ -92,6 +108,18 @@ export function LibrarySearch() {
             >
               Filmy
             </Button>
+            <div className="border-l border-cosmos-border mx-1" />
+            {(['relevance', 'newest', 'oldest'] as const).map((order) => (
+              <Button
+                key={order}
+                variant={sortOrder === order ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setSortOrder(order)}
+                leftIcon={order !== 'relevance' ? <ArrowDownUp className="w-4 h-4" /> : undefined}
+              >
+                {SORT_LABELS[order]}
+              </Button>
+            ))}
           </div>
         </div>
       </Card>
@@ -147,7 +175,7 @@ export function LibrarySearch() {
 
           {results.items.length > 0 ? (
             <LibraryGrid
-              items={results.items}
+              items={sortItems(results.items, sortOrder)}
               onItemClick={setSelectedItem}
             />
           ) : (
