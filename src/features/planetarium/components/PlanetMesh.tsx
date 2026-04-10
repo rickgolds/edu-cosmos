@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { PlanetInfo, PlanetAssetConfig, QualityLevel } from '../planetarium.types';
 import { FALLBACK_COLORS, getGlbPath } from '../planetarium.assets';
+import { isLowPerformanceDevice } from '../utils/performanceDetect';
 
 // Cache for preloaded GLB status
 const glbPreloadCache = new Map<string, 'loading' | 'loaded' | 'error'>();
@@ -363,11 +364,7 @@ function getTextureComponent(props: PlanetMeshProps) {
   return <TexturePlanet {...props} />;
 }
 
-// Detect mobile device - used to avoid GLB models which crash iOS
-const isMobileDevice = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
-};
+// Detect low-performance devices (mobile + weak desktops) to avoid heavy GLB models
 
 /**
  * Main PlanetMesh component
@@ -377,9 +374,9 @@ const isMobileDevice = (): boolean => {
 export function PlanetMesh(props: PlanetMeshProps) {
   const { planet, assets, autoRotate, rotationSpeed } = props;
 
-  // On mobile, always use textures - GLB models cause memory crashes on iOS
-  const isMobile = useMemo(() => isMobileDevice(), []);
-  if (isMobile) {
+  // On low-performance devices, always use textures (mobile + weak desktops)
+  const isLowEnd = useMemo(() => isLowPerformanceDevice(), []);
+  if (isLowEnd) {
     return getTextureComponent(props);
   }
 

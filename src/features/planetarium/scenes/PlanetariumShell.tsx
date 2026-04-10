@@ -20,26 +20,21 @@ import { preloadSunTexture } from './Sun';
 import { preloadMoonTexture } from './Moon';
 import { getPlanetById } from '../planetarium.data';
 import type { PlanetariumSettings } from '../planetarium.types';
+import { isMobileDevice, isLowPerformanceDevice } from '../utils/performanceDetect';
 
-// Detect mobile device (used for preloading decisions)
-const isMobileDevice = () => {
-  if (typeof window === 'undefined') return false;
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
-};
-
-// Start preloading assets - but be conservative on mobile to avoid crashes
+// Start preloading assets - be conservative on low-performance devices
 if (typeof window !== 'undefined') {
-  const isMobile = isMobileDevice();
+  const isLowEnd = isLowPerformanceDevice();
 
   // Always preload overview textures (small, needed immediately)
   preloadOverviewTextures();
 
-  // On desktop, preload everything for smooth experience
-  // On mobile, skip heavy GLB models to prevent memory crashes
-  if (!isMobile) {
+  // On capable devices, preload everything for smooth experience
+  // On low-end (mobile + weak desktops), skip heavy GLB models
+  if (!isLowEnd) {
     preloadSunTexture();
     preloadMoonTexture();
-    preloadPlanetModels(); // Skip on mobile - these are 150MB+ total
+    preloadPlanetModels(); // Skip on low-end - these are 150MB+ total
   }
 }
 
@@ -109,19 +104,22 @@ export function PlanetariumShell({ initialPlanetId }: PlanetariumShellProps) {
   // Handle scene ready - use stable action directly
   const handleSceneReady = actions.setSceneReady;
 
-  // Detect mobile and adjust settings for performance
+  // Detect low-performance devices (mobile + weak desktops) and adjust settings
   const [isMobile, setIsMobile] = useState(false);
+  const [isLowEnd, setIsLowEnd] = useState(false);
 
   useEffect(() => {
     const mobile = isMobileDevice();
+    const lowEnd = isLowPerformanceDevice();
     setIsMobile(mobile);
-    if (mobile) {
+    setIsLowEnd(lowEnd);
+    if (lowEnd) {
       setSettings(prev => ({
         ...prev,
         quality: 'low',
-        showHUD: false,
-        showAtmosphere: false, // Disable atmosphere effect on mobile
-        showSolarSystemContext: false, // Disable context planets on mobile
+        showHUD: mobile ? false : prev.showHUD, // Only hide HUD on mobile
+        showAtmosphere: false, // Disable atmosphere on low-end
+        showSolarSystemContext: false, // Disable context planets on low-end
       }));
     }
   }, []);
@@ -163,13 +161,13 @@ export function PlanetariumShell({ initialPlanetId }: PlanetariumShellProps) {
       <Canvas
         dpr={pixelRatio}
         gl={{
-          antialias: !isMobile && settings.quality === 'high',
-          powerPreference: isMobile ? 'low-power' : 'high-performance',
+          antialias: !isLowEnd && settings.quality === 'high',
+          powerPreference: isLowEnd ? 'low-power' : 'high-performance',
           alpha: false,
-          // Limit precision on mobile to reduce memory usage
-          precision: isMobile ? 'lowp' : 'highp',
+          // Limit precision on low-end devices to reduce memory usage
+          precision: isLowEnd ? 'lowp' : 'highp',
         }}
-        shadows={!isMobile && settings.quality === 'high'}
+        shadows={!isLowEnd && settings.quality === 'high'}
         style={{
           opacity: state.mode === 'intro' ? 0 : 1,
           transition: 'opacity 0.5s ease-out',
